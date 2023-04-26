@@ -1,6 +1,6 @@
 # The-Modding-Tree
 
-A modified version of The Prestige Tree that is much easier to mod. It still requires programming knowledge, but it's mostly pretty easy things and copy/pasting.
+A modified version of The Prestige Tree that extends beyond the original layers.
 
 [Look here for a tutorial on getting started with modding with TMT](docs/getting-started.md)
 

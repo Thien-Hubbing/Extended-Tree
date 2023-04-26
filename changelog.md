@@ -1,5 +1,16 @@
 # The Prestige Tree: Rewritten changelog (major updates only):
 
+## After Extension
+
+### v1.4: The Layering Update
+- Added Hyper-Row 2 layers and row 10 layers
+- Start with 100 points and progresses a lot faster
+- No new achivements yet.
+- New upgrades from row 10 layers
+- Still broken
+
+## Before Forking
+
 ### v1.3: The Expansion Update
 - Added a bunch of new layers
 - Added the next section of achievements

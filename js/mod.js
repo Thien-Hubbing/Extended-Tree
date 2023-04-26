@@ -1,22 +1,22 @@
 let modInfo = {
-	name: "Prestige Tree Rewritten",
-	id: "ptr",
-	author: "Jacorb",
+	name: "The Extended Tree",
+	id: "tet",
+	author: "Thien",
 	pointsName: "points",
-	discordName: "PT Rewritten Server",
-	discordLink: "https://discord.gg/TFCHJJT",
-	changelogLink: "https://github.com/Jacorb90/Prestige-Tree/blob/master/changelog.md",
-    offlineLimit: 1,  // In hours
-    initialStartPoints: new Decimal(10), // Used for hard resets and new players
-	endgame: new Decimal("e3.14e16"),
-	// specialEndgameText: "v1.3 Endgame: e3.14e16 Points",
+	discordName: "None. Don't ask about it.",
+	discordLink: "https://example.com",
+	changelogLink: "https://github.com/Thien-Hubbing/Extended-Tree/blob/master/changelog.md",
+    offlineLimit: 3,  // In hours
+    initialStartPoints: new Decimal(100), // Used for hard resets and new players
+	endgame: new Decimal("e7.45e24"),
+	specialEndgameText: "v1.4 Endgame: Get e7.45e24 Points and all the layers + upgrades.",
 }
 
 // Set your version in num and name
 let VERSION = {
-	num: "1.3",
-	patch: 1,
-	name: "The Expansion Update",
+	num: "1.4",
+	patch: 0,
+	name: "The Layering Update",
 }
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
@@ -39,7 +39,7 @@ function getPointGen() {
 	if(!canGenPoints())
 		return new Decimal(0)
 
-	let gain = new Decimal(1)
+	let gain = new basePointGain()
 	if (hasUpgrade("p", 12)) gain = gain.times(upgradeEffect("p", 12));
 	if (hasUpgrade("p", 13)) gain = gain.times(upgradeEffect("p", 13));
 	if (hasUpgrade("p", 22)) gain = gain.times(upgradeEffect("p", 22));
@@ -59,6 +59,7 @@ function getPointGen() {
 	if (inChallenge("h", 31)) gain = gain.root(tmp.h.pointRoot31);
 	if (hasUpgrade("ss", 43)) gain = gain.pow(gain.lt(tmp.ss.upgrades[43].endpoint)?1.1:1.01);
 	if (hasUpgrade("hn", 31)) gain = gain.pow(1.05);
+	if (hasUpgrade("hp", 11)) gain = gain.pow(upgradeEffect("hp", 11));
 	return gain
 }
 
@@ -66,6 +67,70 @@ function getRow1to6Speed() {
 	let speed = new Decimal(1);
 	if ((Array.isArray(tmp.ma.mastered))?tmp.ma.mastered.includes("t"):false) speed = speed.times(tmp.t.effect2)
 	return speed;
+}
+
+function basePointGain() {
+	let base = new Decimal(1);
+	return base;
+}
+
+function debugFastPace() {
+	console.log("Unlocking everything...")
+	player.b.unlocked = true
+	player.g.unlocked = true
+	player.t.unlocked = true
+	player.s.unlocked = true
+	player.e.unlocked = true
+	player.sb.unlocked = true
+	player.sg.unlocked = true
+	player.q.unlocked = true
+	player.h.unlocked = true
+	player.ss.unlocked = true
+	player.o.unlocked = true
+	player.ba.unlocked = true
+	player.m.unlocked = true
+	player.ps.unlocked = true
+	player.hn.unlocked = true
+	player.hs.unlocked = true
+	player.n.unlocked = true
+	player.i.unlocked = true
+	player.ma.unlocked = true
+	player.ge.unlocked = true
+	player.mc.unlocked = true
+	player.r.unlocked = true
+	player.en.unlocked = true
+	player.ne.unlocked = true
+	player.id.unlocked = true
+	player.ai.unlocked = true
+	player.c.unlocked = true
+	console.log("Powering point gain...")
+	player.b.points = new Decimal("25000")
+	player.g.points = new Decimal("32000")
+	player.t.points = new Decimal("1500")
+	player.s.points = new Decimal("1550")
+	player.e.points = new Decimal("1e5e10")
+	player.sb.points = new Decimal("300")
+	player.sg.points = new Decimal("50")
+	player.q.points = new Decimal("e6.53e9")
+	player.h.points = new Decimal("e1.65e10")
+	player.ss.points = new Decimal("32")
+	player.o.points = new Decimal("e65000")
+	player.ba.points = new Decimal("e4.32e7")
+	player.m.points = new Decimal("e7.84e8")
+	player.ps.points = new Decimal("2100")
+	player.hn.points = new Decimal("e3.83e6")
+	player.hs.points = new Decimal("e1e9")
+	player.n.points = new Decimal("e50640")
+	player.i.points = new Decimal("200")
+	player.ma.points = new Decimal("26")
+	player.ge.points = new Decimal("e472823")
+	player.mc.points = new Decimal("e27402")
+	player.en.points = new Decimal("1.87e47")
+	player.r.points = new Decimal("1.87e47")
+	player.ne.points = new Decimal("20")
+	player.id.points = new Decimal("16")
+	player.ai.points = new Decimal("4.874e37")
+	player.c.points = new Decimal("15")
 }
 
 // You can add non-layer related variables that should to into "player" and be saved here, along with default values

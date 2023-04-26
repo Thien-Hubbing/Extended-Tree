@@ -318,6 +318,22 @@ const SOFTCAPS = {
 		display() { return tmp.ge.rotEff.gte(this.start) },
 		info() { return "Starts at "+format(this.start)+"x, exponent brought to the 1.7th root" },
 	},
+	hp11: {
+		title: "Hyper Point upgrade one",
+		type: "root",
+		start: new Decimal(4),
+		mag: new Decimal(3),
+		display() { return hasUpgrade("hp", 11) && upgradeEffect("hp", 11).gte(this.start) },
+		info() { return "Starts at "+format(this.start)+"x, brought to the 3rd root" },
+	},
+	genEff: {
+		title: "Generator Power Effect",
+		type: "expRoot",
+		start: new Decimal("e1e17"),
+		mag: new Decimal(4),
+		display() { return tmp.g.effect.gte(this.start) },
+		info() { return "Starts at "+format(this.start)+"x, exponent brought to the 4th root" },
+	},
 }
 
 const STATIC_SCALE_DATA = [
