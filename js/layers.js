@@ -2822,6 +2822,7 @@ addLayer("hg", {
 			if (hasUpgrade("in", 11)) eff = eff.times(upgradeEffect("in", 11))
 			if (hasUpgrade("hp", 24)) eff = eff.times(upgradeEffect("hp", 24))
 			if (hasUpgrade("in", 32)) eff = eff.times(buyableEffect("in", 11))
+			if (hasUpgrade("fn", 41)) eff = eff.pow(3)
 			return eff;
 		},
 		effectDescription() {
@@ -5120,6 +5121,10 @@ addLayer("ba", {
 						ret.pos = Decimal.pow(10, ret.pos.log10().pow(1.5));
 						ret.neg = Decimal.pow(10, ret.neg.log10().pow(1.5));
 					}
+					if (hasUpgrade("fn", 55)) {
+						ret.pos = ret.pos.times(upgradeEffect("fn", 55))
+						ret.neg = ret.neg.times(upgradeEffect("fn", 55))
+					}
 					return ret;
 				},
 				effectDisplay() { return "Pos: "+format(tmp.ba.upgrades[24].effect.pos)+"x, Neg: "+format(tmp.ba.upgrades[24].effect.neg)+"x" },
@@ -7384,7 +7389,7 @@ addLayer("ge", {
         hotkeys: [
             {key: "E", description: "Press Shift+E to Gear Reset", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
         ],
-		passiveGeneration() { return hasMilestone("ge", 2)?0.01:0 },
+		passiveGeneration() { return hasMilestone("ge", 2)?(hasUpgrade("fn", 53)?1:0.01):0 },
         doReset(resettingLayer){ 
 			let keep = [];
 			if (hasMilestone("hp", 0) && resettingLayer=="hp") keep.push("milestones")
@@ -7431,7 +7436,7 @@ addLayer("ge", {
 				if (layers.ge.clickables[12].canClick()) layers.ge.clickables[12].onClick();
 				if (layers.ge.clickables[13].canClick()) layers.ge.clickables[13].onClick();
 			}
-			if (player.ge.autoEvol) layers.ge.buyables[11].buy();
+			if (player.ge.autoEvol && tmp.ge.buyables[11].canAfford) layers.ge.buyables[11].buy();
 		},
 		rotEff() {
 			return softcap("rotEff", player.ge.rotations.round().plus(1).pow(5));
@@ -7684,6 +7689,7 @@ addLayer("mc", {
 			mechEn: new Decimal(0),
 			autoSE: false,
 			auto: false,
+			autoCore: false
         }},
         color: "#c99a6b",
 		nodeStyle() { return {
@@ -7714,7 +7720,7 @@ addLayer("mc", {
         hotkeys: [
             {key: "c", description: "Press C to Machine Reset", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
         ],
-		passiveGeneration() { return hasMilestone("mc", 0)?0.01:0 },
+		passiveGeneration() { return hasMilestone("mc", 0)?(hasUpgrade("fn", 53)?1:0.01):0 },
         doReset(resettingLayer){ 
 			let keep = [];
 			if (hasMilestone("hp", 0) && resettingLayer=="hp") keep.push("milestones")
@@ -7954,7 +7960,7 @@ addLayer("mc", {
 					player.mc.buyables[this.id] = player.mc.buyables[this.id].plus(1);
                 },
                 style: {'height':'250px', 'width':'250px', 'background-color'() { return tmp.mc.buyables[12].canAfford?'#c76e6b':'#bf8f8f' }, "border-color": "#c76e6b"},
-				autoed() { return false },
+				autoed() { return player.mc.autoCore },
 			},
 		},
 		upgrades: {
@@ -8028,7 +8034,7 @@ addLayer("en", {
 			let gain = tmp.en.getResetGain.div(tmp.en.gainMult).plus(1)
 			return Decimal.pow(2, gain.root(tmp.en.exp)).times(tmp.en.req);
 		},
-		passiveGeneration() { return hasMilestone("en", 0)?0.1:0 },
+		passiveGeneration() { return hasMilestone("en", 0)?(hasUpgrade("fn", 53)?1:0.1):0 },
 		canReset() {
 			return player.o.points.gte(tmp.en.req) && tmp.en.getResetGain.gt(0) && (hasMilestone("en", 0)?player.en.points.lt(tmp.en.getResetGain):player.en.points.eq(0))
 		},
@@ -8921,6 +8927,7 @@ addLayer("ai", {
 			first: 0,
 			time: new Decimal(0),
 			consc: new Decimal(0),
+			autoNet: false
         }},
         color: "#e6ffcc",
 		nodeStyle() { return {
@@ -8954,7 +8961,7 @@ addLayer("ai", {
         hotkeys: [
             {key: "R", description: "Press Shift+R to AI Reset", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
         ],
-		passiveGeneration() { return 0 },
+		passiveGeneration() { return hasUpgrade("fn", 53)?1:0 },
         doReset(resettingLayer){ 
 			let keep = [];
 			if (layers[resettingLayer].row == this.row) {
@@ -8976,6 +8983,7 @@ addLayer("ai", {
 			// player.ai.consc = player.ai.consc.plus(tmp.ai.buyables[11].effect.times(diff)).div(Decimal.pow(tmp.ai.divConsc, diff));
 			if (tmp.ai.divConsc.lte(1.00001)) player.ai.consc = player.ai.consc.add(tmp.ai.buyables[11].effect.mul(diff));
 			else player.ai.consc = player.ai.consc.add(tmp.ai.buyables[11].effect.mul(0.001).sub(player.ai.consc.mul(tmp.ai.divConsc.pow(0.001).sub(1))).mul(tmp.ai.divConsc.pow(0.001).sub(1).recip().mul(Decimal.sub(1, tmp.ai.divConsc.pow(0.001).recip().pow(diff*1000)))))
+			if (player.ai.autoNet && tmp.ai.buyables[11].canAfford) tmp.ai.buyables[11].buy()
 		},
 		divConsc() { return player.ai.time.plus(1).log10().plus(1).sqrt() },
 		conscEff1() { return player.ai.consc.plus(1) },
@@ -9383,7 +9391,7 @@ addLayer("ai", {
 					player.ai.buyables[this.id] = player.ai.buyables[this.id].plus(1);
                 },
                 style: {'height':'200px', 'width':'200px'},
-				autoed() { return false },
+				autoed() { return player.ai.autoNet },
 			},
 		},
 		clickables: {
@@ -9819,6 +9827,7 @@ addLayer("in", {
 	gainMult() { 
 		let mult = new Decimal(1);
 		if (hasUpgrade("in", 23)) mult = mult.div(upgradeEffect("in", 23))
+		if (hasUpgrade("fn", 61)) mult = mult.div(upgradeEffect("fn", 61))
 		return mult;
 	},
 	canBuyMax() { return hasMilestone("in", 0) },
@@ -10274,13 +10283,19 @@ addLayer("fn", {
 		},
 		embers() {
 			let fire = new Decimal(1)
-			if (hasUpgrade("fn", 32)) fire = fire.add(upgradeEffect("fn", 32));
+			if (hasUpgrade("fn", 32)) fire = fire.add(tmp.fn.emberGain);
 			return fire
+		},
+		emberGain() {
+			let gain = new Decimal(upgradeEffect("fn", 32))
+			if (hasUpgrade("fn", 54)) gain = gain.times(upgradeEffect("fn", 54));
+			return gain
 		},
 		embEff() {
 			let eff = player.fn.embers.plus(1).pow(0.1).plus(1)
 			return eff
 		},
+		automate() {},
 		autoPrestige() { return player.fn.auto },
 		update(diff) {
 			if (player.fn.unlocked) player.fn.energy = player.fn.energy.plus(this.effect().gain.times(diff)).min(this.effect().limit).max(0);
@@ -10321,7 +10336,7 @@ addLayer("fn", {
 						return `<br>
 						<span>You have </span><h2 style="color: #ff4400; text-shadow: 0px 0px 10px #ff4400;">${format(player.fn.embers)}</h2><span> fiery embers which is dividing the furnace cost by ${format(tmp.fn.embEff)}.</span>
 						<br>
-						<span>(${format(upgradeEffect("fn", 32))}/s)</span>`
+						<span>(${format(tmp.fn.emberGain)}/s)</span>`
 					}],
 					["raw-html", function () {return (hasUpgrade("fn", 32))?"<br><h2>Flame Upgrades:</h2><br>":""}],
 					"blank",
@@ -10505,7 +10520,7 @@ addLayer("fn", {
 			35: {
 				title: "Free Free Extra Time Capsules",
 				description: "Multiply the amount of Free Extra Time Capsules by 5.",
-				cost() { return new Decimal("1e277") },
+				cost() { return new Decimal("1e247") },
 				currencyDisplayName: "heat energy",
 				currencyInternalName: "energy",
 				currencyLayer: "fn",
@@ -10514,7 +10529,7 @@ addLayer("fn", {
 			41: {
 				title: "Recipe for Disaster",
 				description: "Cube the Hyper Generator Power gain.",
-				cost: new Decimal(35),
+				cost: new Decimal(26),
 				unlocked() { return hasUpgrade("fn", 34) },
 			},
 			42: {
@@ -10597,6 +10612,75 @@ addLayer("fn", {
 				currencyLayer: "fn",
 				unlocked() { return hasUpgrade("fn", 51) && player.fn.embers.gte(5) },
 			},
+			53: {
+				title: "Ultimate Gains",
+				description: "Gain 100% of all Non-Static resources every second.",
+				cost() { return new Decimal(2e12) },
+				currencyDisplayName: "fiery embers",
+				currencyInternalName: "embers",
+				currencyLayer: "fn",
+				unlocked() { return hasUpgrade("fn", 52) && player.fn.embers.gte(5) },
+			},
+			54: {
+				title: "Magical Flames",
+				description: "Magic boosts the Fiery Embers gain.",
+				cost() { return new Decimal(3e12) },
+				currencyDisplayName: "fiery embers",
+				currencyInternalName: "embers",
+				currencyLayer: "fn",
+				unlocked() { return hasUpgrade("fn", 53) && player.fn.embers.gte(5) },
+				effect() {
+					let eff = player.m.points.plus(1).log10().plus(1).pow(0.1565).plus(1)
+					return eff
+				},
+				effectDisplay() { return format(tmp.fn.upgrades[54].effect)+"x" },
+				formula: "(log10(x+1)+1)^0.1565+1",
+			},
+			55: {
+				title: "Perfectly Balanced",
+				description: "The Net Neturality effect is stronger based on your Dammed Souls.",
+				cost() { return new Decimal(1e14) },
+				currencyDisplayName: "fiery embers",
+				currencyInternalName: "embers",
+				currencyLayer: "fn",
+				unlocked() { return hasUpgrade("fn", 53) && player.fn.embers.gte(5) },
+				effect() {
+					let eff = player.ps.souls.add(1).pow(1337).plus(1)
+					return eff
+				},
+				effectDisplay() { return format(tmp.fn.upgrades[55].effect)+"x" },
+				formula: "log10(x+1)^5+1",
+			},
+			61: {
+				title: "Thermal Runaway",
+				description: "Inflations are cheaper based on your Fiery Embers.",
+				cost() { return new Decimal(3e14) },
+				currencyDisplayName: "fiery embers",
+				currencyInternalName: "embers",
+				currencyLayer: "fn",
+				unlocked() { return hasUpgrade("fn", 55) && player.fn.embers.gte(5) },
+				effect() {
+					let eff = player.fn.embers.add(1).cbrt().plus(1)
+					return eff
+				},
+				effectDisplay() { return "/"+format(tmp.fn.upgrades[61].effect) },
+				formula: "cbrt(x+1)+1",
+			},
+			62: {
+				title: "Quirk Super-Layers",
+				description: "Quirk Layers multiplies the Octonary Space Building effect.",
+				cost() { return new Decimal(3e14) },
+				currencyDisplayName: "fiery embers",
+				currencyInternalName: "embers",
+				currencyLayer: "fn",
+				unlocked() { return hasUpgrade("fn", 55) && player.fn.embers.gte(5) },
+				effect() {
+					let eff = tmp.q.buyables[11].amount
+					return eff
+				},
+				effectDisplay() { return "/"+format(tmp.fn.upgrades[61].effect) },
+				formula: "cbrt(x+1)+1",
+			},
 		},
 		freeExtraTimeCapsules() {
 			let free = new Decimal(0);
@@ -10613,12 +10697,12 @@ addLayer("fn", {
 					return true
 				},
 				costExp() {
-					let exp = new Decimal(2);
+					let exp = new Decimal(20);
 					return exp;
 				},
 				cost(x=player[this.layer].buyables[this.id]) { // cost for buying xth buyable, can be an object if there are multiple currencies
                     if (x.gte(25) && tmp[this.layer].buyables[this.id].costScalingEnabled) x = x.pow(3)
-                    let cost = x.times(0.4).pow(tmp[this.layer].buyables[this.id].costExp).add(1).pow(2).add(1)
+                    let cost = x.pow(tmp[this.layer].buyables[this.id].costExp).add(1).pow(2).add(1)
                     return cost.floor()
                 },
 				display() { // Everything else displayed in the buyable button after the title
@@ -11233,7 +11317,7 @@ addLayer("ab", {
 	layerShown() { return player.t.unlocked || player.s.unlocked },
 	tooltip: "Autobuyers",
 	clickables: {
-		rows: 7,
+		rows: 9,
 		cols: 4,
 		11: {
 			title: "Boosters",
@@ -11505,7 +11589,7 @@ addLayer("ab", {
 			unlocked() { return hasUpgrade("fn", 32) },
 			canClick() { return hasUpgrade("fn", 52) },
 			onClick() { player.ai.autoNet = !player.ai.autoNet },
-			style: {"background-color"() { return player.ai.autoNet?"#147229":"#666666" }},
+			style: {"background-color"() { return player.ai.autoNet?"#e6ffcc":"#666666" }},
 		},
 		82: {
 			title: "Core",
@@ -11513,7 +11597,7 @@ addLayer("ab", {
 			unlocked() { return hasUpgrade("fn", 32) },
 			canClick() { return hasUpgrade("fn", 52) },
 			onClick() { player.mc.autoCore = !player.mc.autoCore },
-			style: {"background-color"() { return player.mc.autoCore?"#147229":"#666666" }},
+			style: {"background-color"() { return player.mc.autoCore?"#c76e6b":"#666666" }},
 		},
 		83: {
 			title: "Furnace",
@@ -11521,7 +11605,23 @@ addLayer("ab", {
 			unlocked() { return hasUpgrade("fn", 32) },
 			canClick() { return hasUpgrade("fn", 52) },
 			onClick() { player.fn.auto = !player.fn.auto },
-			style: {"background-color"() { return player.fn.auto?"#147229":"#666666" }},
+			style: {"background-color"() { return player.fn.auto?"#993e09":"#666666" }},
+		},
+		84: {
+			title: "Inflation",
+			display() { return (hasUpgrade("fn", 52) && player.in.unlocked)?(player.in.auto?"On":"Off"):"Locked" },
+			unlocked() { return hasUpgrade("fn", 32) },
+			canClick() { return hasUpgrade("fn", 52) },
+			onClick() { player.in.auto = !player.in.auto },
+			style: {"background-color"() { return player.in.auto?"#03fc13":"#666666" }},
+		},
+		91: {
+			title: "Heat Engines",
+			display() { return (hasUpgrade("fn", 52) && player.fn.unlocked)?(player.fn.autoExt?"On":"Off"):"Locked" },
+			unlocked() { return hasUpgrade("fn", 32) },
+			canClick() { return hasUpgrade("fn", 52) },
+			onClick() { player.fn.autoExt = !player.fn.autoExt },
+			style: {"background-color"() { return player.fn.autoExt?"#993e09":"#666666" }},
 		},
 	},
 })
