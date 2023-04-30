@@ -8,15 +8,15 @@ let modInfo = {
 	changelogLink: "https://github.com/Thien-Hubbing/Extended-Tree/blob/master/changelog.md",
     offlineLimit: 3,  // In hours
     initialStartPoints: new Decimal(100), // Used for hard resets and new players
-	endgame: new Decimal("e7.45e24"),
-	specialEndgameText: "v1.4 Endgame: Get e7.45e24 Points and all the layers + upgrades.",
+	endgame: new Decimal("e6.8e56"),
+	specialEndgameText: "v1.4 Endgame: Get e6.80e56 Points and all the layers + upgrades.",
 }
 
 // Set your version in num and name
 let VERSION = {
-	num: "1.4",
+	num: "1.4.1",
 	patch: 0,
-	name: "The Layering Update",
+	name: "The N/A Update",
 }
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
@@ -66,6 +66,8 @@ function getPointGen() {
 function getRow1to6Speed() {
 	let speed = new Decimal(1);
 	if ((Array.isArray(tmp.ma.mastered))?tmp.ma.mastered.includes("t"):false) speed = speed.times(tmp.t.effect2)
+	if (hasUpgrade("in", 22)) speed = speed.times(upgradeEffect("in", 22))
+	if (hasUpgrade("fn", 24)) speed = speed.times(tmp.fn.enEff2)
 	return speed;
 }
 
@@ -131,6 +133,38 @@ function debugFastPace() {
 	player.id.points = new Decimal("16")
 	player.ai.points = new Decimal("4.874e37")
 	player.c.points = new Decimal("15")
+	console.log("Mastering Milestones...")
+	player.b.best = new Decimal("25000")
+	player.g.best = new Decimal("32000")
+	player.t.best = new Decimal("1500")
+	player.s.best = new Decimal("1550")
+	player.e.best = new Decimal("1e5e10")
+	player.sb.best = new Decimal("300")
+	player.sg.best = new Decimal("50")
+	player.q.best = new Decimal("e6.53e9")
+	player.h.best = new Decimal("e1.65e10")
+	player.ss.best = new Decimal("32")
+	player.o.best = new Decimal("e65000")
+	player.ba.best = new Decimal("e4.32e7")
+	player.ba.total = new Decimal("e4.32e7")
+	player.m.best = new Decimal("e7.84e8")
+	player.m.total = new Decimal("e7.84e8")
+	player.ps.best = new Decimal("2100")
+	player.hn.best = new Decimal("e3.83e6")
+	player.hn.total = new Decimal("e3.83e6")
+	player.hs.best = new Decimal("e1e9")
+	player.n.best = new Decimal("e50640")
+	player.i.best = new Decimal("200")
+	player.ma.best = new Decimal("26")
+	player.ge.best = new Decimal("e472823")
+	player.mc.best = new Decimal("e27402")
+	player.en.best = new Decimal("1.87e47")
+	player.r.best = new Decimal("1.87e47")
+	player.r.total = new Decimal("1.87e47")
+	player.ne.best = new Decimal("20")
+	player.id.best = new Decimal("16")
+	player.ai.best = new Decimal("4.874e37")
+	player.c.best = new Decimal("15")
 }
 
 // You can add non-layer related variables that should to into "player" and be saved here, along with default values
@@ -153,7 +187,7 @@ function isEndgame() {
 
 // You can change this if you have things that can be messed up by long tick lengths
 function maxTickLength() {
-	return(3600000) // Default is 1 hour which is just arbitrarily large
+	return("3.6e10") // Default is 1 hour which is just arbitrarily large
 }
 
 // Variables that must be defined to display notifications

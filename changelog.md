@@ -2,6 +2,11 @@
 
 ## After Extension
 
+### v1.4.1: The N/A Update
+- More row 10 layers
+- Still no new achivements yet.
+- Refreshing breaks the page, somehow?
+
 ### v1.4: The Layering Update
 - Added Hyper-Row 2 layers and row 10 layers
 - Start with 100 points and progresses a lot faster

@@ -334,6 +334,30 @@ const SOFTCAPS = {
 		display() { return tmp.g.effect.gte(this.start) },
 		info() { return "Starts at "+format(this.start)+"x, exponent brought to the 4th root" },
 	},
+	genEff2: {
+		title: "Generator Power Effect",
+		type: "log",
+		start: new Decimal("e2.25e21"),
+		exp: new Decimal(15),
+		display() { return tmp.g.effect.gte(this.start) },
+		info() { return "Starts at "+format(this.start)+"x, logarithmic but brought to the 15th power" },
+	},
+	infEff: {
+		title: "Inflation Effect",
+		type: "root",
+		start: new Decimal(525),
+		mag: new Decimal(2),
+		display() { return tmp.in.effect.gte(this.start) },
+		info() { return "Starts at ^"+format(this.start)+", brought to the 2nd root" },
+	},
+	fn42: {
+		title: "Fiery Ember Upgrade 1",
+		type: "expRoot",
+		start: new Decimal("e1.5e5"),
+		mag: new Decimal(4),
+		display() { return upgradeEffect("fn", 42).gte(this.start) },
+		info() { return "Starts at "+format(this.start)+"x, exponent brought to the 4th root" },
+	},
 }
 
 const STATIC_SCALE_DATA = [
