@@ -10666,21 +10666,6 @@ addLayer("fn", {
 				effectDisplay() { return "/"+format(tmp.fn.upgrades[61].effect) },
 				formula: "cbrt(x+1)+1",
 			},
-			62: {
-				title: "Quirk Super-Layers",
-				description: "Quirk Layers multiplies the Octonary Space Building effect.",
-				cost() { return new Decimal(3e14) },
-				currencyDisplayName: "fiery embers",
-				currencyInternalName: "embers",
-				currencyLayer: "fn",
-				unlocked() { return hasUpgrade("fn", 55) && player.fn.embers.gte(5) },
-				effect() {
-					let eff = tmp.q.buyables[11].amount
-					return eff
-				},
-				effectDisplay() { return "/"+format(tmp.fn.upgrades[61].effect) },
-				formula: "cbrt(x+1)+1",
-			},
 		},
 		freeExtraTimeCapsules() {
 			let free = new Decimal(0);
