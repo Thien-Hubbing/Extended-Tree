@@ -1354,6 +1354,7 @@ addLayer("t", {
 			if (hasUpgrade("t", 12)) free = free.plus(1);
 			if (hasUpgrade("t", 24)) free = free.plus(tmp.t.enEff2);
 			if (hasUpgrade("q", 22)) free = free.plus(upgradeEffect("q", 22));
+			if (hasUpgrade("fn", 35)) free = free.times(5)
 			return free;
 		},
 		buyables: {
@@ -9865,7 +9866,7 @@ addLayer("in", {
 	},
 	effect() {
 		if ((!unl(this.layer))) return new Decimal(1);
-		let eff = Decimal.pow(tmp.in.effectBase, player.in.points).max(0)
+		let eff = Decimal.pow(tmp.in.effectBase, player.in.points).max(1)
 		if (hasUpgrade("in", 32)) eff = eff.times(buyableEffect("in", 12))
 		if (hasUpgrade("fn", 14)) eff = eff.pow(3)
 		eff = softcap("infEff", eff)
@@ -9980,7 +9981,7 @@ addLayer("in", {
 		},
 		21: {
 			title: "Ultra Points",
-			description: "Unlock furnaces (not made) and Hyper Points reduces the cost of Mastery.",
+			description: "Unlock furnaces and Hyper Points reduces the cost of Mastery.",
 			cost() { return new Decimal(13) },
 			effect() { 
 				let ret = player.hp.points.plus(1).log10().plus(1);
@@ -10060,7 +10061,7 @@ addLayer("in", {
 		11: {
 			title: "Inflation Engine 1",
 			costBase() {
-				let base = new Decimal(2.5);
+				let base = new Decimal(2);
 				return base;
 			},
 			cost(x=player[this.layer].buyables[this.id]) { // cost for buying xth buyable, can be an object if there are multiple currencies
@@ -10520,7 +10521,7 @@ addLayer("fn", {
 			35: {
 				title: "Free Free Extra Time Capsules",
 				description: "Multiply the amount of Free Extra Time Capsules by 5.",
-				cost() { return new Decimal("1e247") },
+				cost() { return new Decimal("1e81") },
 				currencyDisplayName: "heat energy",
 				currencyInternalName: "energy",
 				currencyLayer: "fn",
@@ -10606,7 +10607,7 @@ addLayer("fn", {
 			52: {
 				title: "Automating Everything",
 				description: "Unlock a lot of Automations.",
-				cost() { return new Decimal(5e11) },
+				cost() { return new Decimal(2e10) },
 				currencyDisplayName: "fiery embers",
 				currencyInternalName: "embers",
 				currencyLayer: "fn",
@@ -10615,7 +10616,7 @@ addLayer("fn", {
 			53: {
 				title: "Ultimate Gains",
 				description: "Gain 100% of all Non-Static resources every second.",
-				cost() { return new Decimal(2e12) },
+				cost() { return new Decimal(3.5e10) },
 				currencyDisplayName: "fiery embers",
 				currencyInternalName: "embers",
 				currencyLayer: "fn",
@@ -10624,7 +10625,7 @@ addLayer("fn", {
 			54: {
 				title: "Magical Flames",
 				description: "Magic boosts the Fiery Embers gain.",
-				cost() { return new Decimal(3e12) },
+				cost() { return new Decimal(6e10) },
 				currencyDisplayName: "fiery embers",
 				currencyInternalName: "embers",
 				currencyLayer: "fn",
@@ -10639,7 +10640,7 @@ addLayer("fn", {
 			55: {
 				title: "Perfectly Balanced",
 				description: "The Net Neturality effect is stronger based on your Dammed Souls.",
-				cost() { return new Decimal(1e14) },
+				cost() { return new Decimal(1e11) },
 				currencyDisplayName: "fiery embers",
 				currencyInternalName: "embers",
 				currencyLayer: "fn",
@@ -10654,7 +10655,7 @@ addLayer("fn", {
 			61: {
 				title: "Thermal Runaway",
 				description: "Inflations are cheaper based on your Fiery Embers.",
-				cost() { return new Decimal(3e14) },
+				cost() { return new Decimal(1e12) },
 				currencyDisplayName: "fiery embers",
 				currencyInternalName: "embers",
 				currencyLayer: "fn",
@@ -10670,7 +10671,6 @@ addLayer("fn", {
 		freeExtraTimeCapsules() {
 			let free = new Decimal(0);
 			if (hasUpgrade("fn", 12)) free = free.plus(1)
-			if (hasUpgrade("fn", 35)) free = free.plus(5)
 			return free;
 		},
 		buyables: {
@@ -10682,12 +10682,16 @@ addLayer("fn", {
 					return true
 				},
 				costExp() {
-					let exp = new Decimal(20);
+					let exp = new Decimal(1.5);
 					return exp;
 				},
+				costBase() {
+					let base = new Decimal(3);
+					return base;
+				},
 				cost(x=player[this.layer].buyables[this.id]) { // cost for buying xth buyable, can be an object if there are multiple currencies
-                    if (x.gte(25) && tmp[this.layer].buyables[this.id].costScalingEnabled) x = x.pow(3)
-                    let cost = x.pow(tmp[this.layer].buyables[this.id].costExp).add(1).pow(2).add(1)
+                    if (x.gte(25) && tmp[this.layer].buyables[this.id].costScalingEnabled) x = x.pow(1.2)
+                    let cost = Decimal.pow(tmp.fn.buyables[this.id].costBase, x).pow(tmp.fn.buyables[this.id].costExp).add(1).pow(2).add(1)
                     return cost.floor()
                 },
 				display() { // Everything else displayed in the buyable button after the title
