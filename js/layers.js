@@ -23,6 +23,7 @@ addLayer("p", {
 			if (player.s.unlocked) mult = mult.times(buyableEffect("s", 11));
 			if (hasUpgrade("e", 12)) mult = mult.times(upgradeEffect("e", 12));
 			if (hasUpgrade("b", 31)) mult = mult.times(upgradeEffect("b", 31));
+			if (inChallenge("fn", 11)) mult = mult.root(tmp.fn.challenges[11].resRoot).div(tmp.fn.challenges[11].resRoot.pow(tmp.fn.challenges[11].resRoot.sqrt()));
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -296,6 +297,8 @@ addLayer("b", {
 			let mult = new Decimal(1);
 			if (hasUpgrade("b", 23)) mult = mult.div(upgradeEffect("b", 23));
 			if (player.s.unlocked) mult = mult.div(buyableEffect("s", 13));
+			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
+			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
 			return mult;
 		},
 		canBuyMax() { return hasMilestone("b", 1) },
@@ -628,6 +631,8 @@ addLayer("g", {
 			if (hasUpgrade("g", 22)) mult = mult.div(upgradeEffect("g", 22));
 			if (player.s.unlocked) mult = mult.div(buyableEffect("s", 13));
 			if (hasUpgrade("g", 42)) mult = mult.div(upgradeEffect("g", 42));
+			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
+			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
 			return mult;
 		},
 		canBuyMax() { return hasMilestone("g", 2) },
@@ -1048,6 +1053,8 @@ addLayer("t", {
         gainMult() { // Calculate the multiplier for main currency from bonuses
             mult = new Decimal(1);
 			if (hasUpgrade("b", 41)) mult = mult.plus(upgradeEffect("b", 41));
+			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
+			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -1460,6 +1467,7 @@ addLayer("e", {
             mult = new Decimal(1)
 			if (hasUpgrade("e", 24)) mult = mult.times(upgradeEffect("e", 24));
 			if (hasUpgrade("b", 41)) mult = mult.times(upgradeEffect("b", 41));
+			if (inChallenge("fn", 11)) mult = mult.root(tmp.fn.challenges[11].resRoot).div(tmp.fn.challenges[11].resRoot.pow(tmp.fn.challenges[11].resRoot.root(3)));
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -1741,6 +1749,8 @@ addLayer("s", {
         gainMult() { // Calculate the multiplier for main currency from bonuses
             mult = new Decimal(1)
 			if (hasUpgrade("b", 41)) mult = mult.plus(upgradeEffect("b", 41));
+			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
+			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -2626,6 +2636,8 @@ addLayer("sb", {
 			if ((Array.isArray(tmp.ma.mastered))?tmp.ma.mastered.includes(this.layer):false) mult = mult.div(4/3);
 			if (hasUpgrade("b", 41)) mult = mult.div(upgradeEffect("b", 41));
 			if (hasUpgrade("g", 45)) mult = mult.div(upgradeEffect("g", 45));
+			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
+			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
 			return mult;
 		},
 		autoPrestige() { return player.sb.auto && hasMilestone("q", 4) && player.ma.current!="sb" },
@@ -2702,6 +2714,8 @@ addLayer("sg", {
 			if (hasUpgrade("ss", 21)) mult = mult.div(1.2);
 			if ((Array.isArray(tmp.ma.mastered))?tmp.ma.mastered.includes(this.layer):false) mult = mult.div(1.1);
 			if (hasUpgrade("b", 41)) mult = mult.div(upgradeEffect("b", 41));
+			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
+			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
 			return mult;
 		},
 		autoPrestige() { return player.sg.auto && hasMilestone("q", 6) && player.ma.current!="sg" },
@@ -2794,6 +2808,8 @@ addLayer("hg", {
 		base() { return 1.1 },
 		gainMult() { 
 			let mult = new Decimal(1);
+			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
+			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
 			return mult;
 		},
 		autoPrestige() { return player.hg.auto },
@@ -2873,6 +2889,8 @@ addLayer("hb", {
 	gainMult() { 
 		let mult = new Decimal(1);
 		if (hasUpgrade("g", 43)) mult = mult.div(upgradeEffect("g", 43))
+		if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
+		if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
 		return mult;
 	},
 	autoPrestige() { return player.hb.auto && hasMilestone("hp", 3) },
@@ -2983,6 +3001,7 @@ addLayer("h", {
 			if (hasUpgrade("q", 14)) mult = mult.times(upgradeEffect("q", 14).h);
 			if (player.m.unlocked) mult = mult.times(((Array.isArray(tmp.ma.mastered))?tmp.ma.mastered.includes("m"):false)?tmp.m.mainHexEff:tmp.m.hexEff);
 			if (hasUpgrade("ba", 22)) mult = mult.times(tmp.ba.negBuff);
+			if (inChallenge("fn", 11)) mult = mult.root(tmp.fn.challenges[11].resRoot).div(tmp.fn.challenges[11].resRoot.pow(tmp.fn.challenges[11].resRoot.root(3)));
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -3297,6 +3316,7 @@ addLayer("q", {
 			if (player.m.unlocked) mult = mult.times(((Array.isArray(tmp.ma.mastered))?tmp.ma.mastered.includes("m"):false)?tmp.m.mainHexEff:tmp.m.hexEff);
 			if (hasUpgrade("ba", 22)) mult = mult.times(tmp.ba.negBuff);
 			if (hasUpgrade("hn", 43)) mult = mult.times(upgradeEffect("hn", 43));
+			if (inChallenge("fn", 11)) mult = mult.root(tmp.fn.challenges[11].resRoot).div(tmp.fn.challenges[11].resRoot.pow(tmp.fn.challenges[11].resRoot.root(3)));
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -3926,6 +3946,7 @@ addLayer("o", {
             mult = buyableEffect("o", 11);
 			if (hasUpgrade("hp", 12)) mult = mult.times(upgradeEffect("hp", 12));
 			if (hasUpgrade("fn", 42)) mult = mult.times(upgradeEffect("fn", 42));
+			if (inChallenge("fn", 11)) mult = mult.root(tmp.fn.challenges[11].resRoot).div(tmp.fn.challenges[11].resRoot.pow(tmp.fn.challenges[11].resRoot.root(3)));
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -4282,6 +4303,8 @@ addLayer("ss", {
         gainMult() { // Calculate the multiplier for main currency from bonuses
             mult = new Decimal(1)
 			if (player.ne.unlocked) mult = mult.div(tmp.ne.thoughtEff1);
+			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
+			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -4528,6 +4551,7 @@ addLayer("m", {
         gainMult() { // Calculate the multiplier for main currency from bonuses
             mult = new Decimal(1);
 			if (hasAchievement("a", 74)) mult = mult.times(challengeEffect("h", 32));
+			if (inChallenge("fn", 11)) mult = mult.root(tmp.fn.challenges[11].resRoot).div(tmp.fn.challenges[11].resRoot.pow(tmp.fn.challenges[11].resRoot.root(3)));
             return mult.times(tmp.n.realDustEffs2?tmp.n.realDustEffs2.purpleBlue:new Decimal(1));
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -4901,6 +4925,7 @@ addLayer("ba", {
             mult = new Decimal(1);
 			if (hasAchievement("a", 74)) mult = mult.times(challengeEffect("h", 32));
 			if (player.mc.unlocked) mult = mult.times(clickableEffect("mc", 22));
+			if (inChallenge("fn", 11)) mult = mult.root(tmp.fn.challenges[11].resRoot).div(tmp.fn.challenges[11].resRoot.pow(tmp.fn.challenges[11].resRoot.root(3)));
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -5231,6 +5256,8 @@ addLayer("ps", {
         gainMult() { // Calculate the multiplier for main currency from bonuses
             mult = new Decimal(1)
 			if (player.i.buyables[11].gte(2)) mult = mult.div(buyableEffect("s", 17));
+			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
+			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -5551,6 +5578,7 @@ addLayer("hn", {
 			if (hasUpgrade("s", 35) && player.i.buyables[12].gte(5)) mult = mult.times(upgradeEffect("s", 35));
 			if (player.ma.unlocked) mult = mult.times(tmp.ma.effect);
 			if (hasUpgrade("hp", 22)) mult = mult.times(upgradeEffect("hp", 22));
+			if (inChallenge("fn", 11)) mult = mult.root(tmp.fn.challenges[11].resRoot).div(tmp.fn.challenges[11].resRoot.pow(655));
 			return mult;
 		},
 		getResetGain() {
@@ -6184,6 +6212,7 @@ addLayer("n", {
 			if ((Array.isArray(tmp.ma.mastered))?tmp.ma.mastered.includes("i"):false) mult = mult.times(Decimal.pow(10, player.i.nb));
 			if (hasUpgrade("ai", 24)) mult = mult.times(upgradeEffect("ai", 24));
 			if (hasUpgrade("in", 12)) mult = mult.times(upgradeEffect("in", 12));
+			if (inChallenge("fn", 11)) mult = mult.root(tmp.fn.challenges[11].resRoot).div(tmp.fn.challenges[11].resRoot.pow(655));
             return mult
         },
 		passiveGeneration() { return (hasMilestone("ma", 3)&&player.ma.current!="n")?1:0 },
@@ -6409,6 +6438,7 @@ addLayer("hs", {
 			if (hasUpgrade("s", 33) && player.i.buyables[12].gte(5)) mult = mult.times(upgradeEffect("s", 33));
 			if (player.ma.unlocked) mult = mult.times(tmp.ma.effect);
 			if ((Array.isArray(tmp.ma.mastered))?tmp.ma.mastered.includes("i"):false) mult = mult.times(Decimal.pow(10, player.i.hb));
+			if (inChallenge("fn", 11)) mult = mult.root(tmp.fn.challenges[11].resRoot).div(tmp.fn.challenges[11].resRoot.pow(655));
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -6847,6 +6877,8 @@ addLayer("i", {
 		base() { return new Decimal(((Array.isArray(tmp.ma.mastered))?tmp.ma.mastered.includes(this.layer):false)?"1e100":"1e250") },
         gainMult() { // Calculate the multiplier for main currency from bonuses
             mult = new Decimal(1)
+			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
+			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -7134,6 +7166,8 @@ addLayer("ma", {
 			if (hasUpgrade("hp", 25)) mult = mult.div(upgradeEffect("hp", 25))
 			if (hasUpgrade("in", 21)) mult = mult.div(upgradeEffect("in", 21))
 			if (hasUpgrade("fn", 44)) mult = mult.div(upgradeEffect("fn", 44))
+			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
+			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -7379,6 +7413,7 @@ addLayer("ge", {
 			if (hasUpgrade("ai", 33)) mult = mult.times(upgradeEffect("ai", 33));
 			if (hasUpgrade("ai", 44)) mult = mult.times(upgradeEffect("ai", 44));
 			if (hasUpgrade("hp", 23)) mult = mult.times(upgradeEffect("hp", 23))
+			if (inChallenge("fn", 11)) mult = mult.root(tmp.fn.challenges[11].resRoot).div(tmp.fn.challenges[11].resRoot.pow(655));
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -7712,6 +7747,7 @@ addLayer("mc", {
 			if (player.mc.upgrades.includes(11)) mult = mult.times(buyableEffect("mc", 12));
 			if (hasMilestone("mc", 0)) mult = mult.times(player.ne.thoughts.max(1));
 			if (hasUpgrade("ai", 33)) mult = mult.times(upgradeEffect("ai", 33));
+			if (inChallenge("fn", 11)) mult = mult.root(tmp.fn.challenges[11].resRoot).div(tmp.fn.challenges[11].resRoot.pow(655));
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -8024,6 +8060,7 @@ addLayer("en", {
 			if (player.r.unlocked) mult = mult.times(tmp.r.producerEff);
 			if (hasMilestone("r", 0)) mult = mult.times(player.r.maxMinibots.max(1));
 			if (player.ai.unlocked && tmp.ai) mult = mult.times(tmp.ai.conscEff1);
+			if (inChallenge("fn", 11)) mult = mult.root(tmp.fn.challenges[11].resRoot).div(tmp.fn.challenges[11].resRoot.pow(655));
 			return mult;
 		},
 		getResetGain() {
@@ -8232,6 +8269,8 @@ addLayer("ne", {
 		base: new Decimal("1e10000"),
         gainMult() { // Calculate the multiplier for main currency from bonuses
             mult = new Decimal(1)
+			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
+			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
             return mult
         },
 		canBuyMax() { return false },
@@ -8474,6 +8513,8 @@ addLayer("id", {
         gainMult() { // Calculate the multiplier for main currency from bonuses
             mult = new Decimal(1)
 			if (hasMilestone("id", 2)) mult = mult.div(player.ne.points.plus(1).log10().plus(1));
+			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
+			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -8604,6 +8645,7 @@ addLayer("r", {
 			if (player.ai.unlocked && tmp.ai) mult = mult.times(tmp.ai.conscEff1);
 			if (hasUpgrade("ai", 33)) mult = mult.times(upgradeEffect("ai", 33));
 			if (hasUpgrade("in", 31)) mult = mult.times(upgradeEffect("in", 31));
+			if (inChallenge("fn", 11)) mult = mult.root(tmp.fn.challenges[11].resRoot).div(tmp.fn.challenges[11].resRoot.pow(655));
 			return mult;
 		},
 		getResetGain() {
@@ -8953,6 +8995,7 @@ addLayer("ai", {
 			if (hasUpgrade("ai", 43)) mult = mult.times(upgradeEffect("ai", 43));
 			if (hasUpgrade("ai", 44)) mult = mult.times(player.ai.buyables[11].max(1));
 			if (player.fn.unlocked) mult = mult.times(tmp.fn.enEff)
+			if (inChallenge("fn", 11)) mult = mult.root(tmp.fn.challenges[11].resRoot).div(tmp.fn.challenges[11].resRoot.pow(655));
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -9436,6 +9479,8 @@ addLayer("c", {
 		base: new Decimal(1.025),
         gainMult() { // Calculate the multiplier for main currency from bonuses
             mult = new Decimal(1)
+			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
+			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -9631,6 +9676,7 @@ addLayer("hp", {
 			ret = ret.plus(1).log10().plus(1).log10().plus(1).pow(0.01).root(5).plus(1)
 			mult = mult.plus(ret)
 		}
+		if (inChallenge("fn", 11)) mult = mult.root(tmp.fn.challenges[11].resRoot).div(tmp.fn.challenges[11].resRoot.pow(655));
 		return mult
 	},
 	gainExp() { // Calculate the exponent on main currency from bonuses
@@ -9829,6 +9875,8 @@ addLayer("in", {
 		let mult = new Decimal(1);
 		if (hasUpgrade("in", 23)) mult = mult.div(upgradeEffect("in", 23))
 		if (hasUpgrade("fn", 61)) mult = mult.div(upgradeEffect("fn", 61))
+		if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
+		if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
 		return mult;
 	},
 	canBuyMax() { return hasMilestone("in", 0) },
@@ -10206,7 +10254,9 @@ addLayer("fn", {
 		base() { return new Decimal("1e120") },
         gainMult() { // Calculate the multiplier for main currency from bonuses
             mult = new Decimal(1);
+			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
 			if (player.fn.embers.gte(5)) mult = mult.div(tmp.fn.embEff)
+			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -10300,7 +10350,7 @@ addLayer("fn", {
 		autoPrestige() { return player.fn.auto },
 		update(diff) {
 			if (player.fn.unlocked) player.fn.energy = player.fn.energy.plus(this.effect().gain.times(diff)).min(this.effect().limit).max(0);
-			if (player.fn.autoExt) this.buyables[11].buyMax();
+			if (player.fn.autoExt && tmp.fn.buyables[11].canAfford ) this.buyables[11].buyMax();
 			if (hasUpgrade("fn", 32)) player.fn.embers = player.fn.embers.plus(this.embers().times(diff))
 		},
         row: 9, // Row the layer is in on the tree (0 is the first row)
@@ -10325,7 +10375,8 @@ addLayer("fn", {
 				["column", [["row", [["upgrade", 11], ["upgrade", 12], ["upgrade", 13], ["upgrade", 14], ["upgrade", 15]]]]],
 				["column", [["row", [["upgrade", 21], ["upgrade", 22], ["upgrade", 23], ["upgrade", 24], ["upgrade", 25]]]]],
 				["column", [["row", [["upgrade", 31], ["upgrade", 32], ["upgrade", 33], ["upgrade", 34], ["upgrade", 35]]]]],
-				["column", [["row", [["upgrade", 41]]]]],
+				["column", [["row", [["upgrade", 41]]]]], "blank",
+				"challenges"
 			]
 			},
 			Burners: {
@@ -10729,27 +10780,84 @@ addLayer("fn", {
 				done() { return player.fn.best.gte(2) },
 				effectDescription: "Keep Everything but their points on reset.",
 			},
-			/* 1: {
-				requirementDescription: "3 Time Capsules",
-				done() { return player.t.best.gte(3) || hasAchievement("a", 41) || hasAchievement("a", 71) },
-				effectDescription: "Keep Prestige Upgrades on reset.",
+		},
+		challenges: {
+			rows: 1,
+			cols: 1,
+			11: {
+				name: "Extreme Teperatures",
+				scalePower() {
+					let power = new Decimal(8);
+					return power;
+				},
+				completionLimit() { 
+					let lim = 15;
+					return lim;
+				},
+				challengeDescription() { 
+					let lim = this.completionLimit();
+					let infLim = !isFinite(lim);
+					return 'All resource generation is heavily reduced at level '+formatWhole(tmp.fn.challenges[this.id].resRoot)+'<br>Completions: '+formatWhole(challengeCompletions("fn", 11))+(infLim?"":('/'+lim))
+				},
+				resRoot() {
+					let ret = Decimal.pow(55, challengeCompletions("fn", 11)).pow(2).plus(1).floor()
+					return ret
+				},
+				goal() {
+					let comps = Decimal.pow(challengeCompletions("fn", 11), tmp.fn.challenges[this.id].scalePower);
+					let goal = Decimal.pow("1e5e7", comps).times("1e1e6").pow(comps)
+					return goal
+				},
+				completeInBulk() {
+					if (challengeCompletions("fn", 11)>=tmp[this.layer].challenges[this.id].completionLimit) return;
+					let target = player.points.div("1e1e6").max(1).log("1e5e7").cbrt();
+					target = target.div(tmp.fn.challenges[this.id].scalePower).plus(1).floor();
+					player.h.challenges[this.id] = Math.min(Math.max(player.dn.challenges[this.id], target.toNumber()), tmp[this.layer].challenges[this.id].completionLimit);
+					if (isNaN(player.h.challenges[this.id])) player.h.challenges[this.id] = 0;
+				},
+				currencyDisplayName: "points",
+				currencyInternalName: "points",
+				rewardDescription: "<b>Extreme Temperatures</b> completions divides the cost of all static resources.",
+				rewardEffect() { 
+					let eff = Decimal.pow(160, Decimal.pow(challengeCompletions("fn", 11), 2));
+					if (!eff.eq(eff)) eff = new Decimal(1);
+					return eff;
+				},
+				rewardDisplay() { return "/"+format(tmp.fn.challenges[11].rewardEffect) },
+				formula: "160^(completions^2)",
+				unlocked() { return hasUpgrade("fn", 23) },
+				onStart(testInput=false) { 
+					if (testInput) {
+						player.b.points = new Decimal("0")
+						player.g.points = new Decimal("0")
+						player.t.points = new Decimal("0")
+						player.s.points = new Decimal("0")
+						player.e.points = new Decimal("0")
+						player.sb.points = new Decimal("0")
+						player.sg.points = new Decimal("0")
+						player.q.points = new Decimal("0")
+						player.h.points = new Decimal("0")
+						player.ss.points = new Decimal("0")
+						player.o.points = new Decimal("0")
+						player.ba.points = new Decimal("0")
+						player.m.points = new Decimal("0")
+						player.ps.points = new Decimal("0")
+						player.hn.points = new Decimal("0")
+						player.hs.points = new Decimal("0")
+						player.n.points = new Decimal("0")
+						player.i.points = new Decimal("0")
+						player.ma.points = new Decimal("0")
+						player.ge.points = new Decimal("0")
+						player.mc.points = new Decimal("0")
+						player.en.points = new Decimal("0")
+						player.r.points = new Decimal("0")
+						player.ne.points = new Decimal("0")
+						player.id.points = new Decimal("0")
+						player.ai.points = new Decimal("0")
+						player.c.points = new Decimal("0")
+					}
+				},
 			},
-			2: {
-				requirementDescription: "4 Time Capsules",
-				done() { return player.t.best.gte(4) || hasAchievement("a", 71) },
-				effectDescription: "Keep Booster Upgrades on all resets.",
-			},
-			3: {
-				requirementDescription: "5 Time Capsules",
-				done() { return player.t.best.gte(5) || hasAchievement("a", 71) },
-				effectDescription: "Unlock Auto-Boosters.",
-				toggles: [["b", "auto"]],
-			},
-			4: {
-				requirementDescription: "8 Time Capsules",
-				done() { return player.t.best.gte(8) || hasAchievement("a", 71) },
-				effectDescription: "Boosters reset nothing.",
-			}, */
 		},
 })
 
