@@ -354,9 +354,9 @@ const SOFTCAPS = {
 		title: "Fiery Ember Upgrade 1",
 		type: "expRoot",
 		start: new Decimal("e1.5e5"),
-		mag: new Decimal(5),
+		mag: new Decimal(4),
 		display() { return upgradeEffect("fn", 42).gte(this.start) },
-		info() { return "Starts at "+format(this.start)+"x, exponent brought to the 5th root" },
+		info() { return "Starts at "+format(this.start)+"x, exponent brought to the 4th root" },
 	},
 }
 

@@ -9870,7 +9870,7 @@ addLayer("in", {
 		if (hasUpgrade("in", 32)) eff = eff.times(buyableEffect("in", 12))
 		if (hasUpgrade("fn", 14)) eff = eff.pow(3)
 		eff = softcap("infEff", eff)
-		return eff.floor();
+		return eff.ceil();
 	},
 	effectDescription() {
 		return "which is boosting the Mastery effect by "+(hasUpgrade("fn", 14)?"":"^")+format(tmp.in.effect)+(hasUpgrade("fn", 14)?"x":"")+(softcapActive("infEff", eff)?" (softcapped)":"")+(tmp.nerdMode?(("\n ("+format(tmp.in.effectBase)+"x each)")):"")
