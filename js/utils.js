@@ -671,7 +671,7 @@ function setClickableState(layer, id, state){
 }
 
 function upgradeEffect(layer, id){
-	return tmp[layer].upgrades[id].effect;
+	return (tmp[layer].upgrades[id].effect);
 }
 
 function challengeEffect(layer, id){

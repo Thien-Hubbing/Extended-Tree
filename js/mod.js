@@ -105,6 +105,9 @@ function debugFastPace() {
 	player.id.unlocked = true
 	player.ai.unlocked = true
 	player.c.unlocked = true
+	player.hp.unlocked = true
+	player.in.unlocked = true
+	player.fn.unlocked = true
 	console.log("Powering point gain...")
 	player.b.points = new Decimal("25000")
 	player.g.points = new Decimal("32000")
@@ -133,6 +136,9 @@ function debugFastPace() {
 	player.id.points = new Decimal("16")
 	player.ai.points = new Decimal("4.874e37")
 	player.c.points = new Decimal("15")
+	player.in.points = new Decimal("55")
+	player.hp.points = new Decimal("1e4e11")
+	player.fn.points = new Decimal("15")
 	console.log("Mastering Milestones...")
 	player.b.best = new Decimal("25000")
 	player.g.best = new Decimal("32000")
@@ -165,6 +171,9 @@ function debugFastPace() {
 	player.id.best = new Decimal("16")
 	player.ai.best = new Decimal("4.874e37")
 	player.c.best = new Decimal("15")
+	player.in.best = new Decimal("55")
+	player.hp.total = new Decimal("1e4e11")
+	player.fn.best = new Decimal("15")
 }
 
 // You can add non-layer related variables that should to into "player" and be saved here, along with default values

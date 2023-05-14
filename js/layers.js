@@ -8,7 +8,7 @@ addLayer("p", {
         baseResource: "points", // Name of resource prestige is based on
         baseAmount() {return player.points}, // Get the current amount of baseResource
         type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
-        exponent() { return ((Array.isArray(tmp.ma.mastered))?tmp.ma.mastered.includes(this.layer):false)?0.75:0.5 }, // Prestige currency exponent
+        exponent() { return 0.75 }, // Prestige currency exponent
         gainMult() { // Calculate the multiplier for main currency from bonuses
             mult = new Decimal(1)
 			if (hasAchievement("a", 13)) mult = mult.times(1.1);
@@ -29,6 +29,7 @@ addLayer("p", {
         gainExp() { // Calculate the exponent on main currency from bonuses
             let exp = new Decimal(1)
 			if (hasUpgrade("p", 31)) exp = exp.times(1.05);
+			if (player.hd.unlocked && player.hd.energy.gte(1)) exp = exp.times(tmp.hd.hadEnEff);
 			return exp;
         },
         row: 0, // Row the layer is in on the tree (0 is the first row)
@@ -62,6 +63,7 @@ addLayer("p", {
 				title: "Begin",
 				description: "Generate 1 Point every second.",
 				cost() { return tmp.h.costMult11.times(((Array.isArray(tmp.ma.mastered))?tmp.ma.mastered.includes(this.layer):false)?2:1).pow(tmp.h.costExp11) },
+				effect() { return getPointGen() }
 			},
 			12: {
 				title: "Prestige Boost",
@@ -299,6 +301,7 @@ addLayer("b", {
 			if (player.s.unlocked) mult = mult.div(buyableEffect("s", 13));
 			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
 			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
+			// if (inChallenge("h", 51)) mult = new Decimal(0)
 			return mult;
 		},
 		canBuyMax() { return hasMilestone("b", 1) },
@@ -633,6 +636,7 @@ addLayer("g", {
 			if (hasUpgrade("g", 42)) mult = mult.div(upgradeEffect("g", 42));
 			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
 			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
+			// if (inChallenge("h", 51)) mult = new Decimal(0)
 			return mult;
 		},
 		canBuyMax() { return hasMilestone("g", 2) },
@@ -1055,6 +1059,7 @@ addLayer("t", {
 			if (hasUpgrade("b", 41)) mult = mult.plus(upgradeEffect("b", 41));
 			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
 			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
+			// if (inChallenge("h", 51)) mult = new Decimal(0)
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -1118,7 +1123,7 @@ addLayer("t", {
 			return Decimal.pow(1.01, c.sqrt());
 		},
 		effectDescription() {
-			return "which are generating "+format(tmp.t.effect.gain)+" Time Energy/sec, but with a limit of "+format(tmp.t.effect.limit)+" Time Energy"+(tmp.nerdMode?("\n("+format(tmp.t.effBaseMult.times(tmp.t.effGainBaseMult).times(3))+"x gain each, "+format(tmp.t.effBaseMult.times(2))+"x limit each)"):"")+(((Array.isArray(tmp.ma.mastered))?tmp.ma.mastered.includes(this.layer):false)?(", and which multiply the speed of all layers before Mastery by "+format(tmp.t.effect2)+(tmp.nerdMode?(" (1.01^sqrt(x))"):"")):"")
+			return "which are generating "+format(tmp.t.effect.gain)+" Time Energy/sec, but with a limit of "+format(tmp.t.effect.limit)+" Time Energy"+(tmp.nerdMode?("\n("+format(tmp.t.effBaseMult.times(tmp.t.effGainBaseMult).times(3))+"x gain each, "+format(tmp.t.effBaseMult.times(2))+"x limit each)"):"")+(((Array.isArray(tmp.ma.mastered))?tmp.ma.mastered.includes(this.layer):false)?(", and which multiply the speed of all layers before Mastery by "+format(getRow1to6Speed())+(tmp.nerdMode?(" (1.01^sqrt(x))"):"")):"")
 		},
 		enEff() {
 			if (!unl(this.layer)) return new Decimal(1);
@@ -1471,7 +1476,9 @@ addLayer("e", {
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
-            return new Decimal(1)
+            let exp = new Decimal(1)
+			if (player.hd.unlocked && player.hd.energy.gte(1)) exp = exp.times(tmp.hd.hadEnEff);
+			return exp
         },
 		passiveGeneration() { return (hasMilestone("q", 1)&&player.ma.current!="e")?1:0 },
 		update(diff) {
@@ -1751,6 +1758,7 @@ addLayer("s", {
 			if (hasUpgrade("b", 41)) mult = mult.plus(upgradeEffect("b", 41));
 			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
 			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
+			// if (inChallenge("h", 51)) mult = new Decimal(0)
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -2638,6 +2646,7 @@ addLayer("sb", {
 			if (hasUpgrade("g", 45)) mult = mult.div(upgradeEffect("g", 45));
 			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
 			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
+			// if (inChallenge("h", 51)) mult = new Decimal(0)
 			return mult;
 		},
 		autoPrestige() { return player.sb.auto && hasMilestone("q", 4) && player.ma.current!="sb" },
@@ -2716,6 +2725,7 @@ addLayer("sg", {
 			if (hasUpgrade("b", 41)) mult = mult.div(upgradeEffect("b", 41));
 			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
 			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
+			// if (inChallenge("h", 51)) mult = new Decimal(0)
 			return mult;
 		},
 		autoPrestige() { return player.sg.auto && hasMilestone("q", 6) && player.ma.current!="sg" },
@@ -2810,6 +2820,7 @@ addLayer("hg", {
 			let mult = new Decimal(1);
 			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
 			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
+			// if (inChallenge("h", 51)) mult = new Decimal(0)
 			return mult;
 		},
 		autoPrestige() { return player.hg.auto },
@@ -2891,6 +2902,7 @@ addLayer("hb", {
 		if (hasUpgrade("g", 43)) mult = mult.div(upgradeEffect("g", 43))
 		if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
 		if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
+		// if (inChallenge("h", 51)) mult = new Decimal(0)
 		return mult;
 	},
 	autoPrestige() { return player.hb.auto && hasMilestone("hp", 3) },
@@ -3005,7 +3017,9 @@ addLayer("h", {
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
-            return new Decimal(1)
+            let exp = new Decimal(1)
+			if (player.hd.unlocked && player.hd.energy.gte(1)) exp = exp.times(tmp.hd.hadEnEff);
+			return exp
         },
         row: 3, // Row the layer is in on the tree (0 is the first row)
         hotkeys: [
@@ -3086,7 +3100,7 @@ addLayer("h", {
 			},
 		},
 		challenges: {
-			rows: 4,
+			rows: 5,
 			cols: 2,
 			11: {
 				name: "Upgrade Desert",
@@ -3226,6 +3240,7 @@ addLayer("h", {
 				rewardEffect() { 
 					let eff = softcap("option_d", Decimal.pow(100, Decimal.pow(challengeCompletions("h", 32), 2))).times(tmp.n.realDustEffs2?tmp.n.realDustEffs2.blueOrange:new Decimal(1));
 					if (!eff.eq(eff)) eff = new Decimal(1);
+					if (challengeCompletions("h", 51) >= 1) eff = eff.pow(2)
 					return eff;
 				},
 				rewardDisplay() { return format(tmp.h.challenges[32].rewardEffect)+"x" },
@@ -3284,6 +3299,26 @@ addLayer("h", {
 					}
 				},
 			},
+			51: {
+				name: "The Final Stockage",
+				completionLimit: 1,
+				challengeDescription: "Perform a row 7 reset, you are trapped in every hindrance challenge and you cannot gain static resources.",
+				goal: new Decimal("1e5.5e10"),
+				currencyDisplayName: "points",
+				currencyInternalName: "points",
+				rewardDescription() { return "Square <b>Option D</b>'s effect, <b>Real Super Boosters</b>'s effect is multiplied by 2.5, and unlock infinity." },
+				unlocked() { return player.hd.unlocked },
+				countsAs: [11,12,21,22,31,32,41,42],
+				onStart(testInput=false) {
+					if (testInput) {
+						doReset("ma", true);
+						player.h.activeChallenge = 51;
+						updateTemp();
+						updateTemp();
+						updateTemp();
+					}
+				},
+			},
 		},
 })
 
@@ -3320,7 +3355,9 @@ addLayer("q", {
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
-            return new Decimal(1)
+            let exp = new Decimal(1)
+			if (player.hd.unlocked && player.hd.energy.gte(1)) exp = exp.times(tmp.hd.hadEnEff);
+			return exp
         },
         row: 3, // Row the layer is in on the tree (0 is the first row)
         hotkeys: [
@@ -3940,12 +3977,13 @@ addLayer("o", {
 			if (player.n.buyables[11].gte(4)) exp = exp.times(buyableEffect("o", 32));
 			if ((Array.isArray(tmp.ma.mastered))?tmp.ma.mastered.includes(this.layer):false) exp = exp.times(player.sb.points.times(0.5/100).plus(1))
 			if (player.en.unlocked) exp = exp.plus(tmp.en.owEff);
+			if (hasUpgrade("fn", 42)) exp = exp.times(upgradeEffect("fn", 42));
+			if (player.hd.unlocked && player.hd.energy.gte(1)) exp = exp.times(tmp.hd.hadEnEff);
 			return exp;
 		}, // Prestige currency exponent
         gainMult() { // Calculate the multiplier for main currency from bonuses
             mult = buyableEffect("o", 11);
 			if (hasUpgrade("hp", 12)) mult = mult.times(upgradeEffect("hp", 12));
-			if (hasUpgrade("fn", 42)) mult = mult.times(upgradeEffect("fn", 42));
 			if (inChallenge("fn", 11)) mult = mult.root(tmp.fn.challenges[11].resRoot).div(tmp.fn.challenges[11].resRoot.pow(tmp.fn.challenges[11].resRoot.root(3)));
             return mult
         },
@@ -4305,6 +4343,7 @@ addLayer("ss", {
 			if (player.ne.unlocked) mult = mult.div(tmp.ne.thoughtEff1);
 			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
 			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
+			// if (inChallenge("h", 51)) mult = new Decimal(0)
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -4555,7 +4594,9 @@ addLayer("m", {
             return mult.times(tmp.n.realDustEffs2?tmp.n.realDustEffs2.purpleBlue:new Decimal(1));
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
-            return new Decimal(1)
+            let exp = new Decimal(1)
+			if (player.hd.unlocked && player.hd.energy.gte(1)) exp = exp.times(tmp.hd.hadEnEff);
+			return exp
         },
         row: 4, // Row the layer is in on the tree (0 is the first row)
         hotkeys: [
@@ -4929,7 +4970,9 @@ addLayer("ba", {
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
-            return new Decimal(1)
+            let exp = new Decimal(1)
+			if (player.hd.unlocked && player.hd.energy.gte(1)) exp = exp.times(tmp.hd.hadEnEff);
+			return exp
         },
         row: 4, // Row the layer is in on the tree (0 is the first row)
         hotkeys: [
@@ -5258,6 +5301,7 @@ addLayer("ps", {
 			if (player.i.buyables[11].gte(2)) mult = mult.div(buyableEffect("s", 17));
 			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
 			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
+			// if (inChallenge("h", 51)) mult = new Decimal(0)
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -5489,7 +5533,11 @@ addLayer("ps", {
 				title: "Phantom Booster I",
 				description: "Boost Solar Power.",
 				unlocked() { return hasMilestone("hn", 7) },
-				effect() { return getImprovements("ps", 11).times(tmp.ps.impr.power).div(20).plus(1).sqrt() },
+				effect() {
+					let eff = getImprovements("ps", 11).times(tmp.ps.impr.power).div(20).plus(1).sqrt()
+					if (player.hd.unlocked && player.hd.energy.gte(1)) eff = eff.times(tmp.hd.hadEnEff2);
+					return eff
+				},
 				effectDisplay() { return "+"+format(tmp.ps.impr[11].effect.sub(1).times(100))+"% (multiplicative)" },
 				formula: "sqrt(x*5%)",
 				style: {height: "150px", width: "150px"},
@@ -6217,7 +6265,9 @@ addLayer("n", {
         },
 		passiveGeneration() { return (hasMilestone("ma", 3)&&player.ma.current!="n")?1:0 },
         gainExp() { // Calculate the exponent on main currency from bonuses
-            return new Decimal(1)
+            let exp = new Decimal(1)
+			if (player.hd.unlocked && player.hd.energy.gte(1)) exp = exp.times(tmp.hd.hadEnEff);
+			return exp
         },
         row: 5, // Row the layer is in on the tree (0 is the first row)
         hotkeys: [
@@ -6416,6 +6466,7 @@ addLayer("hs", {
 			buildLim: new Decimal(1),
 			first: 0,
 			auto: false,
+			autoBld: false
         }},
 		roundUpCost: true,
         color: "#dfdfff",
@@ -6428,6 +6479,7 @@ addLayer("hs", {
         exponent() { 
 			let exp = new Decimal(60);
 			if (player.i.buyables[11].gte(4)) exp = exp.times(buyableEffect("s", 19));
+			if (player.hd.unlocked && player.hd.energy.gte(1)) exp = exp.times(tmp.hd.hadEnEff);
 			return exp;
 		}, // Prestige currency exponent
         gainMult() { // Calculate the multiplier for main currency from bonuses
@@ -6486,6 +6538,11 @@ addLayer("hs", {
 		update(diff) {
 			player.hs.buildLim = player.hs.buildLim.max(tmp.hs.buildLimit);
 			if (hasMilestone("ma", 5) && player.hs.auto && player.ma.current!="hs") tmp.hs.buyables[11].buyMax();
+			if (player.hs.autoBld && hasUpgrade("fn", 52)) for (let i=(5+player.i.buyables[11].toNumber());i>=1;i--) {
+				if (tmp.hs.buyables[20+i].canAfford) {
+					layers.hs.buyables[20+i].buy();
+				}
+			}
 		},
 		hyperspace() {
 			let total = player.hs.buyables[11];
@@ -6879,6 +6936,7 @@ addLayer("i", {
             mult = new Decimal(1)
 			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
 			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
+			// if (inChallenge("h", 51)) mult = new Decimal(0)
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -7168,6 +7226,7 @@ addLayer("ma", {
 			if (hasUpgrade("fn", 44)) mult = mult.div(upgradeEffect("fn", 44))
 			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
 			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
+			// if (inChallenge("h", 51)) mult = new Decimal(0)
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -7419,6 +7478,7 @@ addLayer("ge", {
         gainExp() { // Calculate the exponent on main currency from bonuses
             let exp = new Decimal(1)
 			if (hasUpgrade("ai", 34)) exp = exp.times(1.2);
+			if (player.hd.unlocked && player.hd.energy.gte(1)) exp = exp.times(tmp.hd.hadEnEff);
 			return exp;
         },
         row: 6, // Row the layer is in on the tree (0 is the first row)
@@ -7751,7 +7811,9 @@ addLayer("mc", {
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
-            return new Decimal(1)
+			let exp = new Decimal(1)
+			if (player.hd.unlocked && player.hd.energy.gte(1)) exp = exp.times(tmp.hd.hadEnEff);
+			return exp
         },
         row: 6, // Row the layer is in on the tree (0 is the first row)
         hotkeys: [
@@ -8271,6 +8333,7 @@ addLayer("ne", {
             mult = new Decimal(1)
 			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
 			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
+			// if (inChallenge("h", 51)) mult = new Decimal(0)
             return mult
         },
 		canBuyMax() { return false },
@@ -8515,6 +8578,7 @@ addLayer("id", {
 			if (hasMilestone("id", 2)) mult = mult.div(player.ne.points.plus(1).log10().plus(1));
 			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
 			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
+			// if (inChallenge("h", 51)) mult = new Decimal(0)
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -8999,7 +9063,9 @@ addLayer("ai", {
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
-            return new Decimal(1)
+			let exp = new Decimal(1)
+			if (player.hd.unlocked && player.hd.energy.gte(1)) exp = exp.times(tmp.hd.hadEnEff);
+			return exp
         },
         row: 6, // Row the layer is in on the tree (0 is the first row)
         hotkeys: [
@@ -9466,6 +9532,7 @@ addLayer("c", {
 			assigned: [new Decimal(0), new Decimal(0), new Decimal(0), new Decimal(0), new Decimal(0)],
 			gainedPower: [new Decimal(0), new Decimal(0), new Decimal(0), new Decimal(0), new Decimal(0)],
 			auto: false,
+			//autoCiv: false,
 			first: 0,
         }},
         color: "#edb3ff",
@@ -9481,6 +9548,7 @@ addLayer("c", {
             mult = new Decimal(1)
 			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
 			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
+			// if (inChallenge("h", 51)) mult = new Decimal(0)
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -9501,6 +9569,16 @@ addLayer("c", {
         branches: [["i", 2], "id"],
 		update(diff) {
 			if (!player.c.unlocked) return;
+			if (hasUpgrade("fn", 52) && player.c.autoCiv && tmp.c.buyables[11].canAfford) {
+				this.buyables[11].buy()
+			}
+			if (hasUpgrade("fn", 52) && player.c.autoCiv) {
+				player.c.assigned[0] = player.c.buyables[11].plus(1).div(5).floor()
+				player.c.assigned[1] = player.c.buyables[11].plus(1).div(5).floor()
+				player.c.assigned[2] = player.c.buyables[11].plus(1).div(5).floor()
+				player.c.assigned[3] = player.c.buyables[11].plus(1).div(5).floor()
+				player.c.assigned[4] = player.c.buyables[11].plus(1).div(5).floor()
+			}
 			for (let i=0;i<5;i++) player.c.gainedPower[i] = Decimal.pow(2, player.c.gainedPower[i]).pow(3).plus(Decimal.pow(2, player.c.assigned[i]).sub(1).max(0).times(diff/100)).cbrt().log2();
 		},
 		power() {
@@ -9598,7 +9676,7 @@ addLayer("c", {
 					player.c.buyables[this.id] = player.c.buyables[this.id].plus(1);
                 },
                 style: {'height':'140px', 'width':'140px'},
-				autoed() { return false },
+				autoed() { return hasUpgrade("fn", 52) && player.c.autoCiv },
 			},
 		},
 		clickables: {
@@ -9681,7 +9759,8 @@ addLayer("hp", {
 	},
 	gainExp() { // Calculate the exponent on main currency from bonuses
 		let exp = new Decimal(1)
-		return exp;
+		if (player.hd.unlocked && player.hd.energy.gte(1)) exp = exp.times(tmp.hd.hadEnEff);
+		return exp
 	},
 	row: 9, // Row the layer is in on the tree (0 is the first row)
 	branches: ["c","ai","ma"],
@@ -9877,6 +9956,7 @@ addLayer("in", {
 		if (hasUpgrade("fn", 61)) mult = mult.div(upgradeEffect("fn", 61))
 		if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
 		if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
+		// if (inChallenge("h", 51)) mult = new Decimal(0)
 		return mult;
 	},
 	canBuyMax() { return hasMilestone("in", 0) },
@@ -9917,7 +9997,7 @@ addLayer("in", {
 		let eff = Decimal.pow(tmp.in.effectBase, player.in.points).max(1)
 		if (hasUpgrade("in", 32)) eff = eff.times(buyableEffect("in", 12))
 		if (hasUpgrade("fn", 14)) eff = eff.pow(3)
-		eff = softcap("infEff", eff)
+		if (!hasUpgrade("fn", 14)) eff = softcap("infEff", eff)
 		return eff.ceil();
 	},
 	effectDescription() {
@@ -10257,6 +10337,7 @@ addLayer("fn", {
 			if (challengeCompletions("fn", 11) >= 1) mult = mult.div(challengeEffect("fn", 11))
 			if (player.fn.embers.gte(5)) mult = mult.div(tmp.fn.embEff)
 			if (inChallenge("fn", 11)) mult = mult.plus(tmp.fn.challenges[11].resRoot).pow(tmp.fn.challenges[11].resRoot);
+			// if (inChallenge("h", 51)) mult = new Decimal(0)
             return mult
         },
         gainExp() { // Calculate the exponent on main currency from bonuses
@@ -10340,10 +10421,12 @@ addLayer("fn", {
 		emberGain() {
 			let gain = new Decimal(upgradeEffect("fn", 32))
 			if (hasUpgrade("fn", 54)) gain = gain.times(upgradeEffect("fn", 54));
+			if (hasUpgrade("fn", 62)) gain = gain.pow(0.7)
 			return gain
 		},
 		embEff() {
 			let eff = player.fn.embers.plus(1).pow(0.1).plus(1)
+			if (hasUpgrade("fn", 62)) eff = eff.pow(7)
 			return eff
 		},
 		automate() {},
@@ -10586,15 +10669,14 @@ addLayer("fn", {
 			},
 			42: {
 				title: "The sun is a deadly lazer",
-				description: "Fiery Embers heavily boosts the Solarity gain.",
+				description: "Fiery Embers heavily multiplies the Solarity gain exponent.",
 				cost() { return new Decimal(300000) },
 				currencyDisplayName: "fiery embers",
 				currencyInternalName: "embers",
 				currencyLayer: "fn",
 				unlocked() { return hasUpgrade("fn", 32) && player.fn.embers.gte(5) },
 				effect() {
-					let eff = player.fn.embers.plus(1).pow(player.fn.embers.pow(0.656))
-					eff = softcap("fn42", eff)
+					let eff = player.fn.embers.plus(1).log10().plus(1)
 					return eff
 				},
 				effectDisplay() { return format(tmp.fn.upgrades[42].effect)+"x" },
@@ -10658,7 +10740,7 @@ addLayer("fn", {
 			52: {
 				title: "Automating Everything",
 				description: "Unlock a lot of Automations.",
-				cost() { return new Decimal(2e10) },
+				cost() { return new Decimal(5e9) },
 				currencyDisplayName: "fiery embers",
 				currencyInternalName: "embers",
 				currencyLayer: "fn",
@@ -10667,7 +10749,7 @@ addLayer("fn", {
 			53: {
 				title: "Ultimate Gains",
 				description: "Gain 100% of all Non-Static resources every second.",
-				cost() { return new Decimal(3.5e10) },
+				cost() { return new Decimal(1e10) },
 				currencyDisplayName: "fiery embers",
 				currencyInternalName: "embers",
 				currencyLayer: "fn",
@@ -10676,7 +10758,7 @@ addLayer("fn", {
 			54: {
 				title: "Magical Flames",
 				description: "Magic boosts the Fiery Embers gain.",
-				cost() { return new Decimal(6e10) },
+				cost() { return new Decimal(2.5e10) },
 				currencyDisplayName: "fiery embers",
 				currencyInternalName: "embers",
 				currencyLayer: "fn",
@@ -10717,6 +10799,15 @@ addLayer("fn", {
 				},
 				effectDisplay() { return "/"+format(tmp.fn.upgrades[61].effect) },
 				formula: "cbrt(x+1)+1",
+			},
+			62: {
+				title: "Better Coal",
+				description: "Fiery Ember gain is heavily weakened but it's effect is raised to the 7th power.",
+				cost() { return new Decimal(1.5e12) },
+				currencyDisplayName: "fiery embers",
+				currencyInternalName: "embers",
+				currencyLayer: "fn",
+				unlocked() { return hasUpgrade("fn", 61) && player.fn.embers.gte(5) },
 			},
 		},
 		freeExtraTimeCapsules() {
@@ -10859,6 +10950,728 @@ addLayer("fn", {
 				},
 			},
 		},
+})
+
+addLayer("hd", {
+		name: "hadrons", // This is optional, only used in a few places, If absent it just uses the layer id.
+        symbol: "HD", // This appears on the layer's node. Default is the id with the first letter capitalized
+        position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+        startData() { return {
+            unlocked: false,
+			points: new Decimal(0),
+			best: new Decimal(0),
+			total: new Decimal(0),
+			energy: new Decimal(0),
+			first: 0,
+        }},
+		roundUpCost: true,
+        color: "#bd2020",
+		nodeStyle() {return {
+			"background": (player.hd.unlocked||canReset("hd"))?"radial-gradient(#bd2020, #bd4c20)":"#bf8f8f" ,
+        }},
+		componentStyles: {
+			"prestige-button"() {return { "background": (canReset("hd"))?"radial-gradient(#bd2020, #bd4c20)":"#bf8f8f" }},
+		},
+        requires() { 
+			let req = new Decimal("e1.3e7");
+			return req;
+		},
+        resource: "hadronic points", // Name of prestige currency
+        baseResource: "nebula energy", // Name of resource prestige is based on
+        baseAmount() {return player.n.points}, // Get the current amount of baseResource
+        type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
+        exponent() { 
+			let exp = new Decimal("5e-7");
+			return exp;
+		}, // Prestige currency exponent
+        gainMult() { // Calculate the multiplier for main currency from bonuses
+            mult = new Decimal(1)
+            return mult
+        },
+        gainExp() { // Calculate the exponent on main currency from bonuses
+            return new Decimal(1);
+        },
+        row: 10, // Row the layer is in on the tree (0 is the first row)
+        doReset(resettingLayer){ 
+			let keep = [];
+			if (layers[resettingLayer].row > this.row) layerDataReset(this.layer, keep)
+        },
+        layerShown(){return hasUpgrade("fn", 32) || player.hd.unlocked },
+		resetsNothing() { return hasMilestone("hd", 0) },
+        branches: ["n", "in", "ai", "hp"],
+		effect() { 
+			if (!unl(this.layer)) return new Decimal(0);
+			let eff = player.hd.points.plus(1).pow(2);
+			return eff;
+		},
+		effect2() { return player.hd.points.div(1e20).plus(1).sqrt().plus(1) },
+		hadEnGain() { 
+			let gain = player.hd.points.plus(1).pow(55);
+			return gain;
+		},
+		hadEnEff() {
+			let eff = Decimal.mul(1, Decimal.pow(1.0001, player.hd.energy.plus(1).log10().plus(1))).plus(1).log10()
+			return eff
+		},
+		hadEnEff2() {
+			let eff = player.hd.energy.plus(1).log10().plus(1)
+			return eff
+		},
+		effectDescription() { return "which are generating "+(tmp.nerdMode?("(timeEnergy^"+format(tmp.hd.effect)+(tmp.hd.effect.gt(1.01)?("*"+format(tmp.hd.effect2)):"")+"-1)"):format(tmp.hd.hadEnGain))+" Hadronic Energy every second." },
+		update(diff) {
+			player.hd.energy = player.hd.energy.plus(tmp.hd.hadEnGain.times(diff));
+			if (false) {
+				for (let i in tmp.hd.buyables) {
+					if (i!="rows" && i!="cols") {
+						if (tmp.hd.buyables[i].unlocked) {
+							player.hd.buyables[i] = player.hd.buyables[i].plus(tmp.hd.buyables[i].gain.times(diff));
+						}
+					}
+				}
+			}
+		},
+		passiveGeneration() { return hasMilestone("hd", 1)?1:0 },
+		hadPow() {
+			let pow = new Decimal(1);
+			return pow;
+		},
+		tabFormat: ["main-display",
+			"prestige-button",
+			"resource-display",
+			"blank",
+			["display-text",
+				function() {return 'You have ' + format(player.hd.energy) + ' Hadronic Energy, which is inflating non-static resource gain by ^'+format(tmp.hd.hadEnEff)+(tmp.nerdMode?(" (no)"):"")+' and boosting <b>Phantom Booster 1</b> by '+format(tmp.hd.hadEnEff2)+'x.'+(tmp.nerdMode?(" (x+1)^2"):"")},
+					{}],
+			"blank",
+			"milestones",
+			"blank",
+			["display-text",
+				function() { return player.if.unlocked?("<b>Hadron Power: "+format(tmp.hd.hadPow.times(100))+"%</b><br>"):"" },
+					{}],
+			"buyables",
+			"blank"
+		],
+		multiplyBuyables() {
+			let mult = new Decimal(1);
+			return mult;
+		},
+		buyableGainExp() {
+			let exp = new Decimal(1);
+			return exp;
+		},
+		buyables: {
+			rows: 3,
+			cols: 3,
+			11: {
+				title: "Solar Cores",
+				gain() { return player.hd.points.div(2).root(1.5).pow(tmp.hd.buyableGainExp).floor() },
+				effect() { 
+					let amt = player[this.layer].buyables[this.id].times(tmp.o.multiplyBuyables)
+					return Decimal.pow(amt.pow(tmp.o.solPow).log10().plus(1), 1.5)
+				},
+				display() { // Everything else displayed in the buyable button after the title
+                    let data = tmp[this.layer].buyables[this.id]
+                    let display = ("Energize all of your Hadron Points for "+formatWhole(data.gain)+" Antimatter Generators\n"+
+					"Req: 50 Hadron Points\n"+
+					"Amount: " + formatWhole(player[this.layer].buyables[this.id])+((tmp.hd.multiplyBuyables||new Decimal(1)).eq(1)?"":(" x "+format(tmp.hd.multiplyBuyables))))+"\n"+
+					(tmp.nerdMode?("Formula: "+("log(x+1)+1")+""):("Effect: Gain "+format(data.effect)+" Antimatter per second"))
+					return display;
+                },
+                unlocked() { return player[this.layer].unlocked && player.if.unlocked }, 
+                canAfford() { return player.hd.points.gte(50) },
+                buy() { 
+                    player.hd.points = new Decimal(0);
+					player.hd.buyables[this.id] = player.hd.buyables[this.id].plus(tmp[this.layer].buyables[this.id].gain);
+                },
+                buyMax() {
+					// It's gonna be automated anyways.
+				},
+                style: {'height':'140px', 'width':'140px'},
+				autoed() { return false },
+			},
+		},
+		milestones: {
+			0: {
+				requirementDescription: "2 Total Hadron Points",
+				done() { return player.hd.total.gte(2) },
+				effectDescription: "Keep everything on reset.",
+			},
+			1: {
+				requirementDescription: "5,000 Total Hadron Points",
+				done() { return player.hd.total.gte(5000) },
+				effectDescription: "Gain 100% of Hadronic Points gain every second.",
+			},
+		}, 
+})
+
+addLayer("if", {
+	name: "infinites", // This is optional, only used in a few places, If absent it just uses the layer id.
+	symbol: "INF", // This appears on the layer's node. Default is the id with the first letter capitalized
+	position: 1, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+	startData() { return {
+		unlocked: false,
+		points: new Decimal(0),
+		best: new Decimal(0),
+		total: new Decimal(0),
+		first: 0,
+	}},
+	color: "#ffbf00",
+	nodeStyle() {return {
+		"background-color": (((player.if.unlocked||canReset("if")))?"#ffbf00":"#bf8f8f"),
+	}},
+	resource: "infinity", // Name of prestige currency
+	type: "custom", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
+	baseResource: "hyperspace energy and hadron points",
+	baseAmount() { return new Decimal(0) },
+	req: {hs: new Decimal("e4.1e9"), hd: new Decimal("1e14")},
+	requires() { return this.req },
+	exp() { return {hs: new Decimal("1e-9"), hd: new Decimal(0.05)} },
+	exponent() { return tmp[this.layer].exp },
+	gainMult() {
+		let mult = new Decimal(1);
+		return mult;
+	},
+	getResetGain() {
+		let gain = player.hs.points.div(tmp.if.req.hs).pow(tmp.if.exp.hs).times(player.hd.points.div(tmp.if.req.hd).pow(tmp.if.exp.hd));
+		return gain.times(tmp.if.gainMult).floor();
+	},
+	resetGain() { return this.getResetGain() },
+	getNextAt() {
+		let gain = tmp.if.getResetGain.div(tmp.if.gainMult)
+		let next = {hs: gain.sqrt().root(tmp.if.exp.hs).times(tmp.if.req.hs), hd: gain.sqrt().root(tmp.if.exp.hd).times(tmp.if.req.hd)};
+		return next;
+	},
+	passiveGeneration() { return 0 },
+	canReset() {
+		return player.hs.points.gte(tmp.if.req.hs) && player.hd.points.gte(tmp.if.req.hd) && tmp.if.getResetGain.gt(0) 
+	},
+	dispGainFormula() {
+		let vars = ["hs", "hd"]
+		let txt = "";
+		for (let i=0;i<vars.length;i++) {
+			let layer = vars[i];
+			let start = tmp.if.req[layer];
+			let exp = tmp.if.exp[layer];
+			if (i>0) txt += ", "
+			txt += layer.toUpperCase()+": (x / "+format(start)+")^"+format(exp)
+		}
+		return txt;
+	},
+	prestigeButtonText() {
+		if (tmp.nerdMode) return "Gain Formula: "+tmp.hn.dispGainFormula;
+		else return `${ player.if.points.lt(1e3) ? (tmp.if.resetDescription !== undefined ? tmp.if.resetDescription : "Reset for ") : ""}+<b>+${formatWhole(tmp.if.getResetGain)}</b> ${tmp.if.resource} ${tmp.if.resetGain.lt(100) && player.if.points.lt(1e3) ? `<br><br>Next at ${ ('Hyperspace Energy: '+format(tmp.if.nextAt.hs)+', Hadron Points: '+format(tmp.if.nextAt.hd))}` : ""}`
+	},
+	prestigeNotify() {
+		if (!canReset("if")) return false;
+		if (tmp.if.getResetGain.gte(player.if.points.times(0.1).max(1)) && !tmp.if.passiveGeneration) return true;
+		else return false;
+	},
+	tooltip() { return formatWhole(player.hn.points)+" Infinitys" },
+	tooltipLocked() { return "Reach "+formatWhole(tmp.if.req.hs)+" Hyperspace Energy & "+formatWhole(tmp.if.req.hd)+" Hadron Points to unlock (You have "+formatWhole(player.hs.points)+" Hyperspace Energy & "+formatWhole(player.hd.points)+" Hadron Points)" },
+	row: 10, // Row the layer is in on the tree (0 is the first row)
+	doReset(resettingLayer){ 
+		let keep = [];
+		if (layers[resettingLayer].row > this.row) layerDataReset(this.layer, keep)
+	},
+	layerShown(){return player.hd.unlocked },
+	branches: ["hd","ai","in"],
+	tabFormat: ["main-display",
+		"prestige-button",
+		"resource-display",
+		["display-text", function() { return player.if.unlocked?("You have "+formatWhole(player.i.points)+" Imperium Bricks"):"" }],
+		"blank",
+		"milestones",
+		"blank",
+		"upgrades"
+	],
+	milestones: {
+		0: {
+			requirementDescription: "1 Total Infinity",
+			done() { return player.if.total.gte(1) },
+			effectDescription: "Keep all milestones on reset.",
+		},
+		1: {
+			requirementDescription: "2 Total Infinity",
+			done() { return player.if.total.gte(2) },
+			effectDescription: "Keep all upgrades on reset.",
+		},
+		2: {
+			requirementDescription: "3 Total Infinity",
+			done() { return player.if.total.gte(3) },
+			effectDescription: "Keep everything but their points on reset.",
+		},
+		3: {
+			requirementDescription: "4 Total Infinity",
+			done() { return player.if.total.gte(4) },
+			effectDescription: "Unlock infinity & magic upgrades.",
+		},
+		4: {
+			requirementDescription: "5 Total Infinity & have upgrade 5.",
+			done() { return player.if.total.gte(5) && hasUpgrade("if", 15) },
+			effectDescription: "Hadronic Energy gain is cubed",
+		},
+	},
+	upgrades: {
+		rows: 5,
+		cols: 5,
+		11: {
+			title: "Magical Power",
+			description: "All magic effects except.",
+			multiRes: [
+				{
+					cost() { return new Decimal(2) },
+				},
+				{
+					currencyDisplayName: "hadronic energy",
+					currencyInternalName: "energy",
+					currencyLayer: "hd",
+					cost() { return new Decimal("1e42") },
+				},
+			],
+			unlocked() { return player.hn.unlocked && hasUpgrade("p", 11) },
+		},
+		12: {
+			title: "Honour Boost",
+			description: "<b>Prestige Boost</b>'s softcap starts later based on your Total Honour.",
+			multiRes: [
+				{
+					cost() { return new Decimal(player.ma.current=="hn"?"1e6800":1) },
+				},
+				{
+					currencyDisplayName: "prestige points",
+					currencyInternalName: "points",
+					currencyLayer: "p",
+					cost() { return new Decimal(player.ma.current=="hn"?"e4.175e10":"1e1000000") },
+				},
+			],
+			unlocked() { return player.hn.unlocked && hasUpgrade("p", 12) },
+			effect() { return softcap("hn12", player.hn.total.plus(1).pow(1e4)) },
+			effectDisplay() { return format(tmp.hn.upgrades[12].effect)+"x later" },
+			formula: "(x+1)^1e4",
+		},
+		13: {
+			title: "Self-Self-Synergy",
+			description: "<b>Self-Synergy</b> is stronger based on its effect.",
+			multiRes: [
+				{
+					cost() { return new Decimal(player.ma.current=="hn"?"1e7000":2) },
+				},
+				{
+					currencyDisplayName: "prestige points",
+					currencyInternalName: "points",
+					currencyLayer: "p",
+					cost() { return new Decimal(player.ma.current=="hn"?"e4.5e10":"1e3900000") },
+				},
+			],
+			unlocked() { return player.hn.unlocked && hasUpgrade("p", 13) },
+			effect() {
+				let eff = tmp.p.upgrades[13].effect.max(1).log10().plus(1).log10().times(((Array.isArray(tmp.ma.mastered))?tmp.ma.mastered.includes("hn"):false)?200:40).plus(1)
+				if (hasUpgrade("in", 13)) eff = eff.times(upgradeEffect("in", 13))
+				return eff
+			},
+			effectDisplay() { return "^"+format(tmp.hn.upgrades[13].effect) },
+			formula: "log(log(x+1)+1)*40+1",
+		},
+		14: {
+			title: "Anti-Calm",
+			description: "<b>Prestigious Intensity</b>'s effect is 5% stronger.",
+			multiRes: [
+				{
+					cost() { return new Decimal(player.ma.current=="hn"?"1e7010":1e5) },
+				},
+				{
+					currencyDisplayName: "prestige points",
+					currencyInternalName: "points",
+					currencyLayer: "p",
+					cost() { return new Decimal(player.ma.current=="hn"?"e4.55e10":"1e11000000") },
+				},
+			],
+			unlocked() { return player.hn.unlocked && hasUpgrade("p", 14) && hasMilestone("hn", 7) },
+		},
+		15: {
+			title: "Lightspeed Black Hole",
+			description: "You can activate two secondary Dust effects at once.",
+			multiRes: [
+				{
+					cost: new Decimal(3.5e10),
+				},
+				{
+					currencyDisplayName: "prestige points",
+					currencyInternalName: "points",
+					currencyLayer: "p",
+					cost: new Decimal("1e30000000"),
+				},
+			],
+			unlocked() { return hasUpgrade("hn", 53) && hasUpgrade("hn", 54) && player.n.unlocked },
+		},
+		21: {
+			title: "Point Efficiency",
+			description: "<b>Prestige Boost</b>'s softcap is weaker based on your Hexes.",
+			multiRes: [
+				{
+					cost() { return new Decimal(player.ma.current=="hn"?"1e7025":25) },
+				},
+				{
+					currencyDisplayName: "prestige points",
+					currencyInternalName: "points",
+					currencyLayer: "p",
+					cost() { return new Decimal(player.ma.current=="hn"?"e4.58e10":"1e4700000") },
+				},
+			],
+			unlocked() { return player.hn.unlocked && hasUpgrade("p", 21) },
+			cap() { return new Decimal(((Array.isArray(tmp.ma.mastered))?tmp.ma.mastered.includes("hn"):false)?.92:.9) },
+			effect() { return player.m.hexes.plus(1).log10().plus(1).log10().times(0.15).min(tmp.hn.upgrades[this.id].cap) },
+			effectDisplay() { return format(tmp.hn.upgrades[21].effect.times(100))+"% weaker"+(tmp.hn.upgrades[21].effect.gte(tmp.hn.upgrades[this.id].cap)?" (MAXED)":"") },
+			formula() { return "log(log(x+1)+1)*15, maxed at "+format(tmp.hn.upgrades[this.id].cap.times(100))+"%" },
+		},
+		22: {
+			title: "Superpowered Upgrades",
+			description: "<b>Upgrade Power</b> is stronger based on your Damned Souls.",
+			multiRes: [
+				{
+					cost() { return new Decimal(player.ma.current=="hn"?"1e12640":4) },
+				},
+				{
+					currencyDisplayName: "prestige points",
+					currencyInternalName: "points",
+					currencyLayer: "p",
+					cost() { return new Decimal(player.ma.current=="hn"?"e6e11":"1e4000000") },
+				},
+			],
+			unlocked() { return player.hn.unlocked && hasUpgrade("p", 22) },
+			effect() { return Decimal.pow(10, player.ps.souls.plus(1).log10().plus(1).log10().sqrt().times(5)).times(((Array.isArray(tmp.ma.mastered))?tmp.ma.mastered.includes("hn"):false)?3:1) },
+			effectDisplay() { return "^"+format(tmp.hn.upgrades[22].effect) },
+			formula: "10^(sqrt(log(log(x+1)+1))*5)",
+		},
+		23: {
+			title: "Reversal Sensational",
+			description: "<b>Reverse Prestige Boost</b> is stronger based on your Balance Energy.",
+			multiRes: [
+				{
+					cost() { return new Decimal(player.ma.current=="hn"?"1e12625":100) },
+				},
+				{
+					currencyDisplayName: "prestige points",
+					currencyInternalName: "points",
+					currencyLayer: "p",
+					cost() { return new Decimal(player.ma.current=="hn"?"e6e11":"1e5400000") },
+				},
+			],
+			unlocked() { return player.hn.unlocked && hasUpgrade("p", 23) },
+			effect() { return player.ba.points.plus(1).log10().plus(1).pow(.75).times(((Array.isArray(tmp.ma.mastered))?tmp.ma.mastered.includes("hn"):false)?1.1:1) },
+			effectDisplay() { return "^"+format(tmp.hn.upgrades[23].effect) },
+			formula: "(log(x+1)+1)^0.75",
+		},
+		24: {
+			title: "Coronal Energies",
+			description: "Both Coronal Wave effects are doubled (unaffected by softcap).",
+			multiRes: [
+				{
+					cost() { return new Decimal(player.ma.current=="hn"?"1e12645":1.5e5) },
+				},
+				{
+					currencyDisplayName: "prestige points",
+					currencyInternalName: "points",
+					currencyLayer: "p",
+					cost() { return new Decimal(player.ma.current=="hn"?"e6.05e11":"1e12000000") },
+				},
+			],
+			unlocked() { return player.hn.unlocked && hasUpgrade("p", 24) && hasMilestone("hn", 7) },
+		},
+		25: {
+			title: "Imploded Hypernova",
+			description: "Hyperspace Energy & Nebula Energy multiply the Solarity gain exponent & Dust gain.",
+			multiRes: [
+				{
+					cost: new Decimal(5e10),
+				},
+				{
+					currencyDisplayName: "prestige points",
+					currencyInternalName: "points",
+					currencyLayer: "p",
+					cost: new Decimal("1e32500000"),
+				},
+			],
+			unlocked() { return hasUpgrade("hn", 53) && hasUpgrade("hn", 54) && player.n.unlocked && player.hs.unlocked },
+			effect() { return player.hs.points.times(player.n.points.pow(3)).plus(1).log10().plus(1).log10().plus(1) },
+			effectDisplay() { return format(tmp.hn.upgrades[25].effect)+"x" },
+			formula: "log(log(HS*(N^3)+1)+1)+1",
+			style: {"font-size": "9px"},
+		},
+		31: {
+			title: "Exponential Drift",
+			description: "Point gain is raised to the power of 1.05.",
+			multiRes: [
+				{
+					cost() { return new Decimal(player.ma.current=="hn"?"1e12650":64) },
+				},
+				{
+					currencyDisplayName: "prestige points",
+					currencyInternalName: "points",
+					currencyLayer: "p",
+					cost() { return new Decimal(player.ma.current=="hn"?"e6.06e11":"1e5600000") },
+				},
+			],
+			unlocked() { return player.hn.unlocked && hasUpgrade("p", 31) },
+		},
+		32: {
+			title: "Less Useless",
+			description: "<b>Upgrade Power</b> is raised ^7.",
+			multiRes: [
+				{
+					cost() { return new Decimal(player.ma.current=="hn"?"1e12800":1e4) },
+				},
+				{
+					currencyDisplayName: "prestige points",
+					currencyInternalName: "points",
+					currencyLayer: "p",
+					cost() { return new Decimal(player.ma.current=="hn"?"e6.3e11":"1e10250000") },
+				},
+			],
+			unlocked() { return player.hn.unlocked && hasUpgrade("p", 32) },
+		},
+		33: {
+			title: "Column Leader Leader",
+			description: "<b>Column Leader</b> is stronger based on your Best Honour.",
+			multiRes: [
+				{
+					cost() { return new Decimal(player.ma.current=="hn"?"1e12900":500) },
+				},
+				{
+					currencyDisplayName: "prestige points",
+					currencyInternalName: "points",
+					currencyLayer: "p",
+					cost() { return new Decimal(player.ma.current=="hn"?"e6.325e11":"1e6900000") },
+				},
+			],
+			unlocked() { return player.hn.unlocked && hasUpgrade("p", 33) },
+			effect() { return Decimal.pow(10, player.hn.best.plus(1).log10().plus(1).log10().sqrt()).times(((Array.isArray(tmp.ma.mastered))?tmp.ma.mastered.includes("hn"):false)?1.1:1) },
+			effectDisplay() { return format(tmp.hn.upgrades[33].effect)+"x" },
+			formula: "10^sqrt(log(log(x+1)+1))",
+		},
+		34: {
+			title: "Solar Exertion",
+			description: "The <b>Solar Potential</b> effect is boosted by your Total Honour.",
+			multiRes: [
+				{
+					cost() { return new Decimal(player.ma.current=="hn"?"1e12820":5e5) },
+				},
+				{
+					currencyDisplayName: "prestige points",
+					currencyInternalName: "points",
+					currencyLayer: "p",
+					cost() { return new Decimal(player.ma.current=="hn"?"e6.32e11":"1e12500000") },
+				},
+			],
+			unlocked() { return player.hn.unlocked && hasUpgrade("p", 34) && hasMilestone("hn", 7) },
+			effect() { return player.hn.total.plus(1).log10().plus(1).log10().plus(1).log10().plus(1) },
+			effectDisplay() { return format(tmp.hn.upgrades[34].effect)+"x" },
+			formula: "log(log(log(x+1)+1)+1)+1",
+		},
+		35: {
+			title: "Below Death",
+			description: "Purple & Blue Dust multiply the Subspace base.",
+			multiRes: [
+				{
+					cost: new Decimal(1.5e13),
+				},
+				{
+					currencyDisplayName: "prestige points",
+					currencyInternalName: "points",
+					currencyLayer: "p",
+					cost: new Decimal("1e40000000"),
+				},
+			],
+			unlocked() { return hasUpgrade("hn", 53) && hasUpgrade("hn", 54) && player.n.unlocked },
+			effect() { return player.n.purpleDust.times(player.n.blueDust).plus(1).pow(10) },
+			effectDisplay() { return format(tmp.hn.upgrades[35].effect)+"x" },
+			formula: "(B*P+1)^10",
+		},
+		41: {
+			title: "Again and Again",
+			description: "<b>Prestige Recursion</b> is stronger based on your Phantom Power.",
+			multiRes: [
+				{
+					cost() { return new Decimal(player.ma.current=="hn"?"1e13050":1e5) },
+				},
+				{
+					currencyDisplayName: "prestige points",
+					currencyInternalName: "points",
+					currencyLayer: "p",
+					cost() { return new Decimal(player.ma.current=="hn"?"e6.75e11":"1e11000000") },
+				},
+			],
+			unlocked() { return player.hn.unlocked && hasUpgrade("p", 41) && hasMilestone("hn", 7) },
+			effect() { return player.ps.power.plus(1).log10().plus(1).log10().times(((Array.isArray(tmp.ma.mastered))?tmp.ma.mastered.includes("hn"):false)?4.8:2.4).plus(1) },
+			effectDisplay() { return "^"+format(tmp.hn.upgrades[41].effect) },
+			formula: "log(log(x+1)+1)*2.4+1",
+			style: {"font-size": "9px"},
+		},
+		42: {
+			title: "Spatial Awareness II",
+			description: "Space Building costs scale 20% slower.",
+			multiRes: [
+				{
+					cost() { return new Decimal(player.ma.current=="hn"?"1e13100":1.5e5) },
+				},
+				{
+					currencyDisplayName: "prestige points",
+					currencyInternalName: "points",
+					currencyLayer: "p",
+					cost() { return new Decimal(player.ma.current=="hn"?"e6.8e11":"1e12000000") },
+				},
+			],
+			unlocked() { return player.hn.unlocked && hasUpgrade("p", 42) && hasMilestone("hn", 7) },
+		},
+		43: {
+			title: "Quir-cursion",
+			description: "Quirk Energy boosts Quirk gain at a reduced rate.",
+			multiRes: [
+				{
+					cost() { return new Decimal(player.ma.current=="hn"?"1e14300":5e5) },
+				},
+				{
+					currencyDisplayName: "prestige points",
+					currencyInternalName: "points",
+					currencyLayer: "p",
+					cost() { return new Decimal(player.ma.current=="hn"?"e6.9e11":"1e12500000") },
+				},
+			],
+			unlocked() { return player.hn.unlocked && hasUpgrade("p", 43) && hasMilestone("hn", 7) },
+			effect() { return Decimal.pow(10, tmp.q.enEff.max(1).log10().root(1.8)).pow(((Array.isArray(tmp.ma.mastered))?tmp.ma.mastered.includes("hn"):false)?50:1) },
+			effectDisplay() { return format(tmp.hn.upgrades[43].effect)+"x" },
+			formula() { return "10^(log(quirkEnergyEff)^"+((hasUpgrade("t", 35) && player.i.buyables[12].gte(4))?"0.565":"0.556")+")" },
+		},
+		44: {
+			title: "Numerical Lexicon",
+			description: "<b>Spelling Dictionary</b> also affects <b>Visible Regeneration</b> (a Balance Upgrade)'s effect (unaffected by softcap).",
+			multiRes: [
+				{
+					cost() { return new Decimal(player.ma.current=="hn"?"1e14275":5e5) },
+				},
+				{
+					currencyDisplayName: "prestige points",
+					currencyInternalName: "points",
+					currencyLayer: "p",
+					cost() { return new Decimal(player.ma.current=="hn"?"e6.95e11":"1e12500000") },
+				},
+			],
+			unlocked() { return player.hn.unlocked && hasUpgrade("p", 44) && hasMilestone("hn", 7) },
+			style: {"font-size": "8px"},
+		},
+		45: {
+			title: "Under the Fridge",
+			description: "Blue & Orange Dust multiply Nebula Energy gain.",
+			multiRes: [
+				{
+					cost: new Decimal(1e14),
+				},
+				{
+					currencyDisplayName: "prestige points",
+					currencyInternalName: "points",
+					currencyLayer: "p",
+					cost: new Decimal("1e42500000"),
+				},
+			],
+			unlocked() { return hasUpgrade("hn", 53) && hasUpgrade("hn", 54) && player.n.unlocked },
+			effect() { return player.n.blueDust.times(player.n.orangeDust).plus(1).log10().plus(1).pow(3) },
+			effectDisplay() { return format(tmp.hn.upgrades[45].effect)+"x" },
+			formula: "(log(B*O+1)+1)^3",
+		},
+		51: {
+			title: "Ghostly Reduction",
+			description: "The Ghost Spirit cost is divided based on your Total Honour, and cost scales half as fast.",
+			multiRes: [
+				{
+					cost() { return new Decimal(player.ma.current=="hn"?"1e14500":1e6) },
+				},
+				{
+					currencyDisplayName: "prestige points",
+					currencyInternalName: "points",
+					currencyLayer: "p",
+					cost() { return new Decimal(player.ma.current=="hn"?"e6.975e11":"1e12800000") },
+				},
+			],
+			unlocked() { return player.hn.upgrades.length>=16 },
+			effect() { return player.hn.total.plus(1).pow(5) },
+			effectDisplay() { return "/"+format(tmp.hn.upgrades[51].effect) },
+			formula: "(x+1)^5",
+			style: {"font-size": "8px"},
+		},
+		52: {
+			title: "Circular Growth",
+			description: "<b>Tachoclinal Plasma</b> affects the Super-Generator base.",
+			multiRes: [
+				{
+					cost() { return new Decimal(player.ma.current=="hn"?"1e30000":1e7) },
+				},
+				{
+					currencyDisplayName: "prestige points",
+					currencyInternalName: "points",
+					currencyLayer: "p",
+					cost() { return new Decimal(player.ma.current=="hn"?"e7.5e11":"e16000000") },
+				},
+			],
+			unlocked() { return player.hn.upgrades.length>=16 && (player.n.unlocked||player.hs.unlocked) },
+			style: {"font-size": "9px"},
+		},
+		53: {
+			title: "Nebulaic Luminosity",
+			description: "There are 3 new Nebula Dust effects, but you can only have 1 active at a time, and keep dusts on Row 6 resets.",
+			multiRes: [
+				{
+					cost() { return new Decimal(player.ma.current=="hn"?"1e40000":2.5e7) },
+				},
+				{
+					currencyDisplayName: "prestige points",
+					currencyInternalName: "points",
+					currencyLayer: "p",
+					cost: new Decimal("e17250000"),
+				},
+			],
+			unlocked() { return hasUpgrade("hn", 52) && player.n.unlocked },
+			style: {"font-size": "9px"},
+		},
+		54: {
+			title: "Hypersonic Masterpiece",
+			description: "Hyper Buildings are stronger based on your Total Hyperspace Energy.",
+			multiRes: [
+				{
+					cost() { return new Decimal(player.ma.current=="hn"?"1e40000":2.5e7) },
+				},
+				{
+					currencyDisplayName: "prestige points",
+					currencyInternalName: "points",
+					currencyLayer: "p",
+					cost: new Decimal("e17250000"),
+				},
+			],
+			unlocked() { return hasUpgrade("hn", 52) && player.hs.unlocked },
+			style: {"font-size": "9px"},
+			effect() { return player.hs.total.pow(2).plus(1).log10().plus(1).log10().plus(1).log10().times(4).plus(1) },
+			effectDisplay() { return format(tmp.hn.upgrades[54].effect.sub(1).times(100))+"% stronger" },
+			formula: "log(log(log(x^2+1)+1)+1)*400",
+		},
+		55: {
+			title: "Beneath The Sun",
+			description: "Orange & Purple Dust boost Solar Power.",
+			multiRes: [
+				{
+					cost: new Decimal(2.5e14),
+				},
+				{
+					currencyDisplayName: "prestige points",
+					currencyInternalName: "points",
+					currencyLayer: "p",
+					cost: new Decimal("1e45000000"),
+				},
+			],
+			unlocked() { return hasUpgrade("hn", 53) && hasUpgrade("hn", 54) && player.n.unlocked },
+			effect() { return player.n.orangeDust.times(player.n.purpleDust).plus(1).log10() },
+			effectDisplay() { return "+"+format(tmp.hn.upgrades[55].effect.times(100))+"%" },
+			formula: "log(O*P+1)*100",
+		},
+	},
 })
 
 addLayer("a", {
@@ -11713,12 +12526,20 @@ addLayer("ab", {
 			style: {"background-color"() { return player.in.auto?"#03fc13":"#666666" }},
 		},
 		91: {
-			title: "Heat Engines",
-			display() { return (hasUpgrade("fn", 52) && player.fn.unlocked)?(player.fn.autoExt?"On":"Off"):"Locked" },
+			title: "Hyper Buildings",
+			display() { return (hasUpgrade("fn", 52))?(player.hs.autoBld?"On":"Off"):"Locked" },
 			unlocked() { return hasUpgrade("fn", 32) },
 			canClick() { return hasUpgrade("fn", 52) },
-			onClick() { player.fn.autoExt = !player.fn.autoExt },
-			style: {"background-color"() { return player.fn.autoExt?"#993e09":"#666666" }},
+			onClick() { player.hs.autoBld = !player.hs.autoBld },
+			style: {"background-color"() { return player.hs.autoBld?"#dfdfff":"#666666" }},
+		},
+		92: {
+			title: "Population",
+			display() { return (hasUpgrade("fn", 52))?(player.c.autoCiv?"On":"Off"):"Locked" },
+			unlocked() { return hasUpgrade("fn", 32) },
+			canClick() { return hasUpgrade("fn", 52) },
+			onClick() { player.c.autoCiv = !player.c.autoCiv },
+			style: {"background-color"() { return player.c.autoCiv?"#edb3ff":"#666666" }},
 		},
 	},
 })
