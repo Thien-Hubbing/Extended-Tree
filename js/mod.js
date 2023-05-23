@@ -59,7 +59,7 @@ function getPointGen() {
 	if (inChallenge("h", 31)) gain = gain.root(tmp.h.pointRoot31);
 	if (hasUpgrade("ss", 43)) gain = gain.pow(gain.lt(tmp.ss.upgrades[43].endpoint)?1.1:1.01);
 	if (hasUpgrade("hn", 31)) gain = gain.pow(1.05);
-	if (hasUpgrade("hp", 11)) gain = gain.pow(upgradeEffect("hp", 11));
+	//if (hasUpgrade("hp", 11)) gain = gain.pow(upgradeEffect("hp", 11));
 	return gain
 }
 
@@ -68,6 +68,7 @@ function getRow1to6Speed() {
 	if ((Array.isArray(tmp.ma.mastered))?tmp.ma.mastered.includes("t"):false) speed = speed.times(tmp.t.effect2)
 	if (hasUpgrade("in", 22)) speed = speed.times(upgradeEffect("in", 22))
 	if (hasUpgrade("fn", 24)) speed = speed.times(tmp.fn.enEff2)
+	if (player.hd.unlocked) speed = speed.times(buyableEffect("hd", 11))
 	return speed;
 }
 
